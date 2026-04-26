@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Archive — The Collector's Intelligence Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      color: #1A120A;
+      background: #e8f3f3;
+    }
+
+    /* ── Mesh gradient canvas ── */
+    #mesh-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+
+    /* White veil — matches veilOpacity="bg-white/20" */
+    #mesh-veil {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.20);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.022;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── All page content sits above canvas ── */
+    .page-content { position: relative; z-index: 2; }
+
+    /* ── Announcement bar ── */
+    .announce {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 24px;
+      background: rgba(255,255,255,0.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+      font-size: 13px;
+      color: #5C4030;
+      letter-spacing: 0.01em;
+    }
+    .announce a {
+      color: #C4622A;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(196,98,42,0.3);
+      transition: border-color 0.15s, opacity 0.15s;
+    }
+    .announce a:hover { border-color: #C4622A; opacity: 0.8; }
+    .announce-dot {
+      width: 6px; height: 6px;
+      background: #C4622A;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.35; transform: scale(0.7); }
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 48px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .logo-img { height: 34px; width: auto; mix-blend-mode: multiply; }
+
+    .btn-nav {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      background: #C4622A;
+      border: none;
+      padding: 9px 22px;
+      border-radius: 100px;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      box-shadow: 0 2px 12px rgba(196,98,42,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease;
+    }
+    .btn-nav:hover  { transform: translateY(-1px) scale(1.02); box-shadow: 0 4px 20px rgba(196,98,42,0.5); }
+    .btn-nav:active { transform: scale(0.97); }
+    .btn-nav:focus-visible { outline: 2px solid #C9933A; outline-offset: 3px; }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: calc(100svh - 104px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 60px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #C4622A;
+      background: rgba(255,255,255,0.45);
+      border: 1px solid rgba(196,98,42,0.25);
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 36px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .hero-heading {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(44px, 7vw, 82px);
+      font-weight: 400;
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+      color: #1A120A;
+      max-width: 860px;
+      margin: 0 0 28px;
+    }
+
+    .hero-heading em {
+      font-style: italic;
+      color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      background-image: linear-gradient(135deg, #C4622A 0%, #C9933A 100%);
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 19px);
+      color: #5C4030;
+      max-width: 540px;
+      line-height: 1.75;
+      margin: 0 0 44px;
+      font-weight: 300;
+    }
+
+    .hero-ctas {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: #1A120A;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 100px;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      box-shadow:
+        0 2px 8px rgba(26,18,10,0.25),
+        0 8px 32px rgba(26,18,10,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease;
+    }
+    .btn-primary:hover  { transform: translateY(-2px) scale(1.02); box-shadow: 0 4px 20px rgba(26,18,10,0.35), 0 16px 48px rgba(26,18,10,0.15); }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:focus-visible { outline: 2px solid #C4622A; outline-offset: 3px; }
+
+    .btn-ghost {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #8A7262;
+      background: transparent;
+      border: none;
+      padding: 14px 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .btn-ghost:hover { color: #1A120A; }
+    .btn-ghost:focus-visible { outline: 2px solid #C4622A; outline-offset: 3px; border-radius: 4px; }
+
+    /* ── App mockup ── */
+    .mockup-wrap {
+      position: relative;
+      margin-top: 72px;
+      width: 100%;
+      max-width: 920px;
+    }
+
+    .mockup-glow {
+      position: absolute;
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      height: 100px;
+      background: radial-gradient(ellipse, rgba(196,98,42,0.18) 0%, transparent 70%);
+      filter: blur(20px);
+      pointer-events: none;
+    }
+
+    .mockup-frame {
+      background: rgba(255,255,255,0.45);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.2),
+        0 8px 32px rgba(26,18,10,0.12),
+        0 40px 100px rgba(26,18,10,0.10);
+    }
+
+    .mockup-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 20px;
+      background: rgba(255,255,255,0.3);
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #C4622A; }
+    .dot-y { background: #C9933A; }
+    .dot-g { background: #6B7C52; }
+    .titlebar-label { margin-left: 10px; font-size: 12px; color: #8A7262; font-weight: 500; }
+
+    .mockup-content {
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 20px;
+      min-height: 320px;
+    }
+
+    .mock-sidebar {
+      background: rgba(255,255,255,0.35);
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 12px;
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mock-sidebar-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #8A7262;
+      margin-bottom: 8px;
+      padding: 0 6px;
+    }
+    .mock-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #8A7262;
+      font-weight: 500;
+      transition: background 0.15s, color 0.15s;
+      cursor: pointer;
+    }
+    .mock-item.active {
+      background: rgba(196,98,42,0.1);
+      color: #C4622A;
+      border: 1px solid rgba(196,98,42,0.18);
+    }
+
+    .mock-main { display: flex; flex-direction: column; gap: 14px; }
+
+    .mock-stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .mock-stat {
+      background: rgba(255,255,255,0.4);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .mock-stat-label { font-size: 10px; color: #8A7262; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px; }
+    .mock-stat-val { font-family: 'DM Serif Display', serif; font-size: 20px; color: #1A120A; line-height: 1; }
+    .mock-stat-val.up { color: #4A8C5C; }
+    .mock-stat-change { font-size: 11px; color: #8A7262; margin-top: 4px; }
+
+    .mock-chart {
+      background: rgba(255,255,255,0.35);
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 10px;
+      padding: 18px;
+      flex: 1;
+    }
+    .mock-chart-label { font-size: 11px; color: #8A7262; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 12px; }
+    .mock-bars { display: flex; align-items: flex-end; gap: 5px; height: 64px; }
+    .mock-bar { flex: 1; border-radius: 3px 3px 0 0; background: rgba(196,98,42,0.18); }
+    .mock-bar.highlight { background: linear-gradient(to top, #C4622A, #C9933A); }
+
+    .mock-item-list { display: flex; flex-direction: column; gap: 8px; }
+    .mock-collection-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      background: rgba(255,255,255,0.35);
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 8px;
+    }
+    .mock-thumb { width: 32px; height: 32px; border-radius: 6px; flex-shrink: 0; object-fit: cover; }
+    .mock-item-info { flex: 1; min-width: 0; }
+    .mock-item-name { font-size: 12px; color: #1A120A; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mock-item-cat  { font-size: 10px; color: #8A7262; margin-top: 2px; }
+    .mock-item-price { font-size: 12px; color: #4A8C5C; font-weight: 700; flex-shrink: 0; }
+
+    /* ── Section divider ── */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.6), transparent);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* ── Pillars ── */
+    .pillars-section {
+      padding: 100px 24px 120px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-label {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #C4622A;
+      margin-bottom: 18px;
+    }
+    .section-heading {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(30px, 4vw, 48px);
+      font-weight: 400;
+      text-align: center;
+      color: #1A120A;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      margin: 0 0 14px;
+    }
+    .section-sub {
+      text-align: center;
+      color: #5C4030;
+      font-size: 16px;
+      max-width: 460px;
+      margin: 0 auto 72px;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .pillar-card {
+      background: rgba(255,255,255,0.45);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.65);
+      border-radius: 18px;
+      padding: 36px 30px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease, border-color 0.2s ease;
+      box-shadow: 0 2px 16px rgba(26,18,10,0.06), 0 8px 40px rgba(26,18,10,0.04);
+    }
+    .pillar-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.8), transparent);
+    }
+    .pillar-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 40px rgba(26,18,10,0.12), 0 20px 60px rgba(26,18,10,0.08);
+      border-color: rgba(255,255,255,0.8);
+    }
+    .pillar-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      background: rgba(196,98,42,0.08);
+      border: 1px solid rgba(196,98,42,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      margin-bottom: 24px;
+    }
+    .pillar-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: #1A120A;
+      margin: 0 0 14px;
+      letter-spacing: -0.02em;
+    }
+    .pillar-body {
+      font-size: 15px;
+      color: #5C4030;
+      line-height: 1.75;
+      font-weight: 300;
+    }
+
+    /* ── Mission ── */
+    .mission-section {
+      padding: 80px 24px 120px;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .mission-quote {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(24px, 3.5vw, 38px);
+      line-height: 1.4;
+      color: #1A120A;
+      letter-spacing: -0.02em;
+      margin: 0 0 52px;
+    }
+    .mission-quote span {
+      color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      background-image: linear-gradient(135deg, #C4622A 0%, #C9933A 100%);
+    }
+    .mission-cta-hint { font-size: 13px; color: #8A7262; margin-top: 14px; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 36px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-logo { height: 22px; width: auto; opacity: 0.65; mix-blend-mode: multiply; }
+    .footer-copy { font-size: 13px; color: #8A7262; }
+    .footer-links { display: flex; gap: 28px; }
+    .footer-links a { font-size: 13px; color: #8A7262; text-decoration: none; transition: color 0.15s; }
+    .footer-links a:hover { color: #1A120A; }
+
+    /* ── Scroll fade-in ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    .fade-in:nth-child(2) { transition-delay: 0.1s; }
+    .fade-in:nth-child(3) { transition-delay: 0.2s; }
+
+    @media (max-width: 768px) {
+      .pillars-grid { grid-template-columns: 1fr; }
+      nav { padding: 14px 20px; }
+      .mockup-content { grid-template-columns: 1fr; }
+      .mock-sidebar { display: none; }
+      footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mesh gradient background -->
+  <canvas id="mesh-canvas"></canvas>
+  <div id="mesh-veil"></div>
+
+  <div class="page-content">
+    <!-- Announcement bar -->
+    <div class="announce">
+      <span class="announce-dot"></span>
+      Now in private beta &mdash;
+      <a href="/app.html">Request early access &rarr;</a>
+    </div>
+
+    <!-- Nav -->
+    <nav>
+      
+      <a href="/app.html" class="btn-nav" href="/app.html">Get Early Access</a>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-eyebrow">
+        <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><circle cx="3.5" cy="3.5" r="3.5" fill="currentColor"/></svg>
+        AI-Powered Collection Management
+      </div>
+
+      <h1 class="hero-heading">
+        The tool serious<br/>collectors have <em>always deserved</em>
+      </h1>
+
+      <p class="hero-sub">
+        Photograph. Identify. Value. Protect.<br/>
+        Everything you own, in one place — powered by AI that actually understands what collecting means.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="/app.html" class="btn-primary">Join the Waitlist</a>
+        <a href="#how-it-works" class="btn-ghost">See how it works &darr;</a>
+      </div>
+
+      <!-- Mockup -->
+      <div class="mockup-wrap" id="how-it-works">
+        <div class="mockup-glow"></div>
+        <div class="mockup-frame">
+          <div class="mockup-titlebar">
+            <div class="dot dot-r"></div>
+            <div class="dot dot-y"></div>
+            <div class="dot dot-g"></div>
+            <span class="titlebar-label">archive — My Collection</span>
+          </div>
+          <div class="mockup-content">
+            <div class="mock-sidebar">
+              <div class="mock-sidebar-label">Collection</div>
+              <div class="mock-item active">📊&nbsp; Dashboard</div>
+              <div class="mock-item">📸&nbsp; Identify</div>
+              <div class="mock-item">📦&nbsp; All Items</div>
+              <div class="mock-item">🛡️&nbsp; Insurance</div>
+              <div class="mock-item" style="margin-top:auto">⚙️&nbsp; Settings</div>
+            </div>
+            <div class="mock-main">
+              <div class="mock-stat-row">
+                <div class="mock-stat">
+                  <div class="mock-stat-label">Total Value</div>
+                  <div class="mock-stat-val">$48,230</div>
+                  <div class="mock-stat-change">↑ $2,140 this month</div>
+                </div>
+                <div class="mock-stat">
+                  <div class="mock-stat-label">Items Tracked</div>
+                  <div class="mock-stat-val">214</div>
+                  <div class="mock-stat-change">12 added recently</div>
+                </div>
+                <div class="mock-stat">
+                  <div class="mock-stat-label">Top Gainer</div>
+                  <div class="mock-stat-val up">+18%</div>
+                  <div class="mock-stat-change">1952 Topps Mantle</div>
+                </div>
+              </div>
+              <div class="mock-chart">
+                <div class="mock-chart-label">Portfolio Value — Last 6 Months</div>
+                <div class="mock-bars">
+                  <div class="mock-bar" style="height:42%"></div>
+                  <div class="mock-bar" style="height:51%"></div>
+                  <div class="mock-bar" style="height:47%"></div>
+                  <div class="mock-bar" style="height:62%"></div>
+                  <div class="mock-bar" style="height:79%"></div>
+                  <div class="mock-bar highlight" style="height:100%"></div>
+                </div>
+              </div>
+              <div class="mock-item-list">
+                <div class="mock-collection-item">
+                  <img src="https://placehold.co/32x32/f0e8d8/8A7262?text=⚾" alt="" class="mock-thumb" />
+                  <div class="mock-item-info">
+                    <div class="mock-item-name">1952 Topps Mickey Mantle #311</div>
+                    <div class="mock-item-cat">Baseball Card · PSA 6</div>
+                  </div>
+                  <div class="mock-item-price">$24,000</div>
+                </div>
+                <div class="mock-collection-item">
+                  <img src="https://placehold.co/32x32/f0e8d8/8A7262?text=🎭" alt="" class="mock-thumb" />
+                  <div class="mock-item-info">
+                    <div class="mock-item-name">Basquiat Lithograph, 1987</div>
+                    <div class="mock-item-cat">Fine Art · Authenticated</div>
+                  </div>
+                  <div class="mock-item-price">$8,500</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pillars -->
+    <div class="section-divider"></div>
+
+    <section class="pillars-section">
+      <p class="section-label">How It Works</p>
+      <h2 class="section-heading">Built for serious collectors</h2>
+      <p class="section-sub">Three features that change how you manage, understand, and protect your collection.</p>
+
+      <div class="pillars-grid">
+        <div class="pillar-card fade-in">
+          <div class="pillar-icon">📸</div>
+          <h3 class="pillar-title">Identify Instantly</h3>
+          <p class="pillar-body">Point your camera at anything in your collection and AI identifies it in seconds — name, condition, category, and estimated market value. No manual entry, no databases to browse.</p>
+        </div>
+        <div class="pillar-card fade-in">
+          <div class="pillar-icon">📊</div>
+          <h3 class="pillar-title">Know Your Worth</h3>
+          <p class="pillar-body">Track your entire collection's real-time market value in one place. See what's gained, what's lost, and what your collection is worth today — not what you paid for it.</p>
+        </div>
+        <div class="pillar-card fade-in">
+          <div class="pillar-icon">🛡️</div>
+          <h3 class="pillar-title">Protect What You Own</h3>
+          <p class="pillar-body">Generate professional insurance documentation in one tap. A clean, detailed PDF of your entire collection, ready to submit to any insurance company the moment you need it.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission -->
+    <div class="section-divider"></div>
+
+    <section class="mission-section" id="waitlist">
+      <p class="section-label">Our Mission</p>
+      <p class="mission-quote">
+        Archive exists to give serious collectors<br/>
+        <span>the tool they've always deserved</span> — a single place to photograph, identify, value, and protect everything they own, powered by AI that actually understands what collecting means.
+      </p>
+      <a href="/app.html" class="btn-primary" style="font-size:15px; padding:16px 42px;">
+        Request Early Access
+      </a>
+      <p class="mission-cta-hint">No spam. Collector-first, always.</p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      
+      <span class="footer-copy">&copy; 2026 Archive. All rights reserved.</span>
+      <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="/app.html">Contact</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ── WebGL Mesh Gradient ── -->
+  <script>
+  (function () {
+    const canvas = document.getElementById('mesh-canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+    if (!gl) {
+      canvas.style.display = 'none';
+      document.body.style.background = 'linear-gradient(135deg,#72b9bb,#ffd1bd,#dbf4a4,#b5d9d9)';
+      return;
+    }
+
+    /* ── Shaders ── */
+    const VS = `
+      attribute vec2 a_pos;
+      void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+    `;
+
+    const FS = `
+      precision highp float;
+      uniform float u_time;
+      uniform vec2  u_res;
+      uniform float u_distortion;
+      uniform float u_swirl;
+      uniform float u_speed;
+      uniform float u_offsetX;
+
+      mat2 rot2(float a) {
+        float c = cos(a), s = sin(a);
+        return mat2(c, -s, s, c);
+      }
+
+      float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+      }
+      float vnoise(vec2 p) {
+        vec2 i = floor(p), f = fract(p);
+        vec2 u = f * f * (3.0 - 2.0 * f);
+        return mix(
+          mix(hash(i),             hash(i + vec2(1,0)), u.x),
+          mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), u.x),
+          u.y
+        );
+      }
+
+      void main() {
+        vec2 uv = gl_FragCoord.xy / u_res;
+        uv.x += u_offsetX;
+
+        float t = u_time * u_speed;
+
+        /* Distortion via smooth noise */
+        vec2 n;
+        n.x = vnoise(uv * 2.8 + vec2(t * 0.28,  0.0 )) - 0.5;
+        n.y = vnoise(uv * 2.8 + vec2(0.0, t * 0.28 + 47.3)) - 0.5;
+        uv += n * u_distortion * 0.13;
+
+        /* Swirl around center */
+        vec2 ctr = vec2(0.5);
+        vec2 dc = uv - ctr;
+        float dr = length(dc);
+        float ang = u_swirl * (1.0 - dr) * 1.6 + t * 0.18;
+        uv = ctr + rot2(ang) * dc;
+
+        /* 6 animated anchor points — matching component defaults */
+        vec2 pts[6];
+        pts[0] = vec2(0.14 + 0.13*sin(t*0.68),        0.24 + 0.13*cos(t*0.52));
+        pts[1] = vec2(0.80 + 0.10*cos(t*0.59 + 2.1),  0.14 + 0.10*sin(t*0.77 + 0.7));
+        pts[2] = vec2(0.87 + 0.08*sin(t*0.91 + 3.5),  0.80 + 0.08*cos(t*0.43 + 1.3));
+        pts[3] = vec2(0.23 + 0.12*cos(t*0.53 + 4.2),  0.87 + 0.12*sin(t*0.66 + 2.0));
+        pts[4] = vec2(0.50 + 0.15*sin(t*0.41 + 1.1),  0.50 + 0.15*cos(t*0.63 + 3.1));
+        pts[5] = vec2(0.09 + 0.09*cos(t*0.79 + 5.3),  0.64 + 0.09*sin(t*0.32 + 0.4));
+
+        /* Colors from component: ["#72b9bb","#b5d9d9","#ffd1bd","#ffebe0","#8cc5b8","#dbf4a4"] */
+        vec3 cols[6];
+        cols[0] = vec3(0.447, 0.725, 0.733); /* #72b9bb teal        */
+        cols[1] = vec3(0.710, 0.851, 0.851); /* #b5d9d9 powder blue */
+        cols[2] = vec3(1.000, 0.820, 0.741); /* #ffd1bd peach       */
+        cols[3] = vec3(1.000, 0.922, 0.878); /* #ffebe0 cream       */
+        cols[4] = vec3(0.549, 0.773, 0.722); /* #8cc5b8 sage        */
+        cols[5] = vec3(0.859, 0.957, 0.643); /* #dbf4a4 lime        */
+
+        /* Inverse-distance weighting (power=6 for sharp boundaries) */
+        vec3  col   = vec3(0.0);
+        float total = 0.0;
+        for (int i = 0; i < 6; i++) {
+          float d = length(uv - pts[i]);
+          float w = 1.0 / pow(d + 1e-4, 6.0);
+          col   += w * cols[i];
+          total += w;
+        }
+        col /= total;
+
+        gl_FragColor = vec4(col, 1.0);
+      }
+    `;
+
+    function mkShader(type, src) {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      return s;
+    }
+
+    const prog = gl.createProgram();
+    gl.attachShader(prog, mkShader(gl.VERTEX_SHADER,   VS));
+    gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, FS));
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+
+    /* Full-screen quad */
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    const aPos = gl.getAttribLocation(prog, 'a_pos');
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+    /* Uniforms */
+    const uTime  = gl.getUniformLocation(prog, 'u_time');
+    const uRes   = gl.getUniformLocation(prog, 'u_res');
+    const uDist  = gl.getUniformLocation(prog, 'u_distortion');
+    const uSwirl = gl.getUniformLocation(prog, 'u_swirl');
+    const uSpeed = gl.getUniformLocation(prog, 'u_speed');
+    const uOffX  = gl.getUniformLocation(prog, 'u_offsetX');
+
+    /* Values matching component defaults */
+    gl.uniform1f(uDist,  0.8);
+    gl.uniform1f(uSwirl, 0.6);
+    gl.uniform1f(uSpeed, 0.42);
+    gl.uniform1f(uOffX,  0.08);
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    /* Render loop */
+    let t0 = null;
+    function frame(ts) {
+      if (!t0) t0 = ts;
+      gl.uniform1f(uTime, (ts - t0) / 1000);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+
+  /* Scroll fade-in */
+  const obs = new IntersectionObserver(
+    es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.15 }
+  );
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+  </script>
+
+</body>
+</html>
