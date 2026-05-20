@@ -15,7 +15,8 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { image, description } = req.body;
+    const { image, description, context } = req.body;
+    const contextStr = context || 'You are an expert collectibles appraiser.';
 
     if (!image && !description) {
       return res.status(400).json({ error: 'No image or description provided' });
@@ -43,7 +44,7 @@ If unsure, return best guess with lower confidence.`;
           },
           {
             type: 'text',
-            text: `You are an expert collectibles appraiser. The user describes this item as: "${description}". Use both the image and the description to identify it as accurately as possible. ${JSON_PROMPT}`
+            text: `${contextStr} The user describes this item as: "${description}". Use both the image and the description to identify it as accurately as possible. ${JSON_PROMPT}`
           }
         ]
       }];
@@ -59,7 +60,7 @@ If unsure, return best guess with lower confidence.`;
           },
           {
             type: 'text',
-            text: `You are an expert collectibles appraiser. Identify this item. ${JSON_PROMPT}`
+            text: `${contextStr} Identify this item. ${JSON_PROMPT}`
           }
         ]
       }];
@@ -68,7 +69,7 @@ If unsure, return best guess with lower confidence.`;
       console.log('Mode: text only, description:', description);
       messages = [{
         role: 'user',
-        content: `You are an expert collectibles appraiser. The user just acquired this item and describes it as: "${description}". Identify it and estimate its current market value. ${JSON_PROMPT}`
+        content: `${contextStr} The user just acquired this item and describes it as: "${description}". Identify it and estimate its current market value. ${JSON_PROMPT}`
       }];
     }
 

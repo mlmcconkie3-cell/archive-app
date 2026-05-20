@@ -814,6 +814,49 @@ input[type="file"]{display:none}
   </div>
 </div>
 
+<!-- COLLECTION PICKER -->
+<div id="coll-picker" class="hidden" style="position:fixed;inset:0;z-index:75;display:flex;align-items:flex-end;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px)">
+  <div style="width:100%;background:#0c2a27;border-radius:24px 24px 0 0;padding:24px 18px 40px;border-top:0.5px solid rgba(255,255,255,0.15);max-height:85vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 style="font-family:'DM Serif Display',serif;font-size:20px;color:#fff;font-weight:400">My Collections</h3>
+      <button onclick="hide('coll-picker')" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px">×</button>
+    </div>
+    <div id="coll-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px"></div>
+    <button onclick="showCreateCollection()" style="width:100%;padding:13px;background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.2);border-radius:14px;color:rgba(255,255,255,0.7);font-size:14px;cursor:pointer;font-family:'Geist',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px">
+      <span style="font-size:18px">+</span> Create new collection
+    </button>
+  </div>
+</div>
+
+<!-- CREATE COLLECTION - STEP 1: Pick preset -->
+<div id="create-coll-step1" class="hidden" style="position:fixed;inset:0;z-index:76;display:flex;align-items:flex-end;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px)">
+  <div style="width:100%;background:#0c2a27;border-radius:24px 24px 0 0;padding:24px 18px 40px;border-top:0.5px solid rgba(255,255,255,0.15);max-height:85vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h3 style="font-family:'DM Serif Display',serif;font-size:20px;color:#fff;font-weight:400">What kind of collection?</h3>
+      <button onclick="hide('create-coll-step1')" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px">×</button>
+    </div>
+    <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px">Choose a preset to get started</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="preset-grid"></div>
+  </div>
+</div>
+
+<!-- CREATE COLLECTION - STEP 2: Name it -->
+<div id="create-coll-step2" class="hidden" style="position:fixed;inset:0;z-index:77;display:flex;align-items:flex-end;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px)">
+  <div style="width:100%;background:#0c2a27;border-radius:24px 24px 0 0;padding:24px 18px 40px;border-top:0.5px solid rgba(255,255,255,0.15)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h3 style="font-family:'DM Serif Display',serif;font-size:20px;color:#fff;font-weight:400" id="step2-title">Name your collection</h3>
+      <button onclick="hide('create-coll-step2')" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px">×</button>
+    </div>
+    <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px" id="step2-sub">Give it a memorable name</p>
+    <input id="new-coll-name" type="text" placeholder="e.g. Japan 2026, My Sneakers..."
+      style="width:100%;padding:14px 16px;background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.2);border-radius:14px;color:#fff;font-size:16px;font-family:'Geist',sans-serif;margin-bottom:14px;outline:none"
+      onkeydown="if(event.key==='Enter')confirmCreateCollection()">
+    <button onclick="confirmCreateCollection()" style="width:100%;padding:13px;background:#fff;border:none;border-radius:14px;color:#0c2a27;font-size:15px;font-weight:600;cursor:pointer;font-family:'Geist',sans-serif">
+      Create collection
+    </button>
+  </div>
+</div>
+
 <!-- MAIN APP -->
 <div id="app" class="app">
 
@@ -1141,6 +1184,50 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── STATE ──
+const PRESETS = [
+  {id:'travel', icon:'✈️', name:'Travel', color:'#5b9bc8', sub:'Document trips & purchases'},
+  {id:'clothing', icon:'👕', name:'Clothing', color:'#7b68ee', sub:'Sneakers, shirts, outerwear'},
+  {id:'tech', icon:'💻', name:'Tech', color:'#4a9eff', sub:'Devices, accessories, gadgets'},
+  {id:'collectibles', icon:'🃏', name:'Collectibles', color:'#f0b94a', sub:'Cards, coins, comics'},
+  {id:'luxury', icon:'⌚', name:'Luxury', color:'#e98a64', sub:'Watches, jewelry, bags'},
+  {id:'home', icon:'🏠', name:'Home', color:'#64c882', sub:'Furniture, art, appliances'},
+  {id:'entertainment', icon:'🎮', name:'Entertainment', color:'#c879d9', sub:'Games, vinyl, books'},
+  {id:'sport', icon:'💪', name:'Sport', color:'#ff6b6b', sub:'Equipment, apparel'},
+];
+
+let collections = [];
+let activeCollection = null;
+
+function loadCollections(){
+  const k = 'arc_collections_' + (user?.id||'demo');
+  const s = localStorage.getItem(k);
+  collections = s ? JSON.parse(s) : [];
+  if(!collections.length){
+    collections = [{id:'default', name:'My Collection', icon:'📦', preset:'general', color:'#5b9bc8', createdAt: new Date().toISOString()}];
+    saveCollections();
+  }
+  activeCollection = collections[0];
+}
+
+function saveCollections(){
+  localStorage.setItem('arc_collections_' + (user?.id||'demo'), JSON.stringify(collections));
+}
+
+function getAIContext(presetId){
+  const contexts = {
+    travel: 'This item is being added to a travel collection. Identify it and estimate its customs/travel value, note its likely country of origin or place of purchase.',
+    clothing: 'This item is clothing or footwear. Identify the exact brand, colorway, size if visible, season, and current resale market value.',
+    tech: 'This is a tech item. Identify the exact model, storage/specs if visible, serial number region, and current market value.',
+    collectibles: 'This is a collectible. Identify the edition, print run, grade condition, certification if any, and current collector market value.',
+    luxury: 'This is a luxury item. Look for authentication markers, serial numbers, hallmarks, and identify the exact reference/model with current market value.',
+    home: 'This is a home item. Identify it and estimate its replacement value and approximate age.',
+    entertainment: 'This is an entertainment collectible. Identify the edition, format, and current collector value.',
+    sport: 'This is sports equipment or apparel. Identify the brand, model, sport, and current market value.',
+    general: 'You are an expert collectibles appraiser. Identify this item accurately.',
+  };
+  return contexts[presetId] || contexts.general;
+}
+
 let user=null, coll=[], cur=null, curDetailIdx=null, dIdx=0, selectedPreset=null;
 
 function hide(id){document.getElementById(id).classList.add('hidden')}
@@ -1232,6 +1319,9 @@ function launchApp(){
   document.getElementById('profile-email-display').textContent=user.email||'';
   document.getElementById('profile-email-item').textContent=user.email||'';
   document.getElementById('profile-joined').textContent=user.created||'Recently';
+  loadCollections();
+  updateCollSelector();
+  updateAddScreenForCollection();
   updateStats();
   renderRecentStrip();
   checkMilestones();
@@ -1239,6 +1329,7 @@ function launchApp(){
 
 // ── COLLECTION STORAGE ──
 function loadColl(){
+  loadCollections();
   const k='arc_coll_'+(user?.id||'demo');
   const s=localStorage.getItem(k);
   coll=s?JSON.parse(s):[];
@@ -1255,11 +1346,96 @@ function updateSendBtn(){
     btn.title=txt?'Identify from description':'Take a photo';
   }
 }
-let selectedCollName='My Collection';
+let pendingPreset = null;
+
 function toggleCollSelector(){
-  // Simple toggle for now - future: show collection picker dropdown
-  alert('Collection selector coming soon! Items are added to My Collection for now.');
+  renderCollList();
+  show('coll-picker');
 }
+
+function renderCollList(){
+  const list = document.getElementById('coll-list');
+  list.innerHTML = '';
+  collections.forEach(function(c){
+    const isActive = activeCollection && activeCollection.id === c.id;
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 16px;background:'+(isActive?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.05)')+';border:0.5px solid rgba(255,255,255,'+(isActive?'0.3':'0.1')+');border-radius:14px;cursor:pointer;transition:all 0.15s';
+    div.innerHTML = '<span style="font-size:22px">'+c.icon+'</span><div style="flex:1"><div style="font-size:14px;font-weight:500;color:#fff">'+c.name+'</div><div style="font-size:12px;color:rgba(255,255,255,0.45)">'+getCollItemCount(c.id)+' items</div></div>'+(isActive?'<span style="color:rgba(255,255,255,0.6);font-size:12px">Active</span>':'');
+    div.onclick = function(){ selectCollection(c); };
+    list.appendChild(div);
+  });
+}
+
+function getCollItemCount(collId){
+  if(collId === 'default') return coll.length;
+  return coll.filter(function(i){ return i.collectionId === collId; }).length;
+}
+
+function selectCollection(c){
+  activeCollection = c;
+  hide('coll-picker');
+  updateCollSelector();
+  updateAddScreenForCollection();
+}
+
+function updateCollSelector(){
+  const btn = document.getElementById('selected-coll-label');
+  if(btn && activeCollection) btn.textContent = activeCollection.icon + ' ' + activeCollection.name;
+}
+
+function updateAddScreenForCollection(){
+  const nameEl = document.getElementById('avs-name');
+  if(nameEl && user) nameEl.textContent = user.name || 'Collector';
+  const countEl = document.getElementById('avs-count');
+  if(countEl){
+    const count = getCollItemCount(activeCollection ? activeCollection.id : 'default');
+    countEl.textContent = count + ' item' + (count !== 1 ? 's' : '') + ' · ' + (activeCollection ? activeCollection.name : 'My Collection');
+  }
+  updateStats();
+}
+
+function showCreateCollection(){
+  hide('coll-picker');
+  const grid = document.getElementById('preset-grid');
+  grid.innerHTML = '';
+  PRESETS.forEach(function(p){
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:16px 14px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.15);border-radius:14px;cursor:pointer;text-align:center;transition:all 0.15s';
+    div.innerHTML = '<div style="font-size:28px;margin-bottom:6px">'+p.icon+'</div><div style="font-size:13px;font-weight:500;color:#fff">'+p.name+'</div><div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:3px">'+p.sub+'</div>';
+    div.onclick = function(){
+      pendingPreset = p;
+      document.getElementById('step2-title').textContent = p.icon + ' ' + p.name + ' collection';
+      document.getElementById('step2-sub').textContent = p.sub;
+      document.getElementById('new-coll-name').value = '';
+      document.getElementById('new-coll-name').placeholder = p.id === 'travel' ? 'e.g. Japan 2026, Europe Summer...' : 'e.g. My ' + p.name + '...';
+      hide('create-coll-step1');
+      show('create-coll-step2');
+      setTimeout(function(){ document.getElementById('new-coll-name').focus(); }, 100);
+    };
+    grid.appendChild(div);
+  });
+  show('create-coll-step1');
+}
+
+function confirmCreateCollection(){
+  const name = document.getElementById('new-coll-name').value.trim();
+  if(!name || !pendingPreset) return;
+  const newColl = {
+    id: 'coll_' + Date.now(),
+    name: name,
+    icon: pendingPreset.icon,
+    preset: pendingPreset.id,
+    color: pendingPreset.color,
+    createdAt: new Date().toISOString()
+  };
+  collections.push(newColl);
+  saveCollections();
+  activeCollection = newColl;
+  hide('create-coll-step2');
+  updateCollSelector();
+  updateAddScreenForCollection();
+}
+
 let pendingDescription='';
 let pendingPhoto=null;
 
@@ -1330,7 +1506,7 @@ async function identifyFromText(description){
     const res=await fetch('/api/identify',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({description})
+      body:JSON.stringify({description, context: getAIContext(activeCollection ? activeCollection.preset : 'general')})
     });
     if(!res.ok)throw new Error('API error '+res.status);
     const item=await res.json();
@@ -1369,7 +1545,7 @@ function getEmoji(cat){
 async function identifyItem(file){
   try{
     const b64=await compressImage(file);
-    const res=await fetch('/api/identify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:b64})});
+    const res=await fetch('/api/identify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:b64, description: pendingDescription, context: getAIContext(activeCollection ? activeCollection.preset : 'general')})});
     if(!res.ok)throw new Error('API error '+res.status);
     const item=await res.json();
     item.paid=0;item.emoji='📷';
@@ -1407,7 +1583,7 @@ async function confirmAdd(){
   const place=document.getElementById('e-place').value||'';
   const notes=document.getElementById('e-notes').value||cur.sub||'';
   const dateVal=document.getElementById('e-date').value;
-  const newItem={...cur,name,paid,place,notes,date:dateVal,id:Date.now(),addedAt:dateVal||new Date().toISOString().split('T')[0]};
+  const newItem={...cur,name,paid,place,notes,date:dateVal,id:Date.now(),addedAt:dateVal||new Date().toISOString().split('T')[0],collectionId: activeCollection ? activeCollection.id : 'default'};
   coll.push(newItem);saveColl();updateStats();
   document.getElementById('s-name').textContent=name;
   document.getElementById('s-val').textContent=cur.val>0?'Market value: $'+Number(cur.val).toLocaleString():'Added to collection';
