@@ -92,10 +92,6 @@ body{font-family:"DM Sans",sans-serif;min-height:100vh;color:var(--brown);overfl
 .add-hero{text-align:center;margin-bottom:24px}
 .add-hero h2{font-family:"DM Serif Display",serif;font-size:28px;color:var(--brown);font-weight:400;margin-bottom:6px}
 .add-hero p{font-size:14px;color:var(--brown2)}
-.add-value-strip{background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.35);border-radius:var(--rs);padding:10px 16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(10px)}
-.avs-label{font-size:11px;color:var(--brown2);text-transform:uppercase;letter-spacing:0.07em}
-.avs-value{font-family:"Bebas Neue",sans-serif;font-size:22px;color:var(--brown);letter-spacing:-0.5px}
-.avs-count{font-size:12px;color:var(--brown3)}
 
 /* Conversational input */
 .conv-input-wrap{background:rgba(255,255,255,0.25);border:1.5px solid rgba(255,255,255,0.5);border-radius:18px;padding:16px;margin-bottom:16px;backdrop-filter:blur(20px);box-shadow:0 4px 20px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.5)}
@@ -425,7 +421,6 @@ input[type="file"]{display:none}
 /* Glass card base */
 #app .glass,
 #app .conv-input-wrap,
-#app .add-value-strip,
 #app .qa-btn,
 #app .reveal-card {
   position: relative;
@@ -443,7 +438,6 @@ input[type="file"]{display:none}
 }
 #app .glass::before,
 #app .conv-input-wrap::before,
-#app .add-value-strip::before,
 #app .qa-btn::before,
 #app .reveal-card::before {
   content: "";
@@ -461,7 +455,6 @@ input[type="file"]{display:none}
 }
 #app .glass::after,
 #app .conv-input-wrap::after,
-#app .add-value-strip::after,
 #app .qa-btn::after,
 #app .reveal-card::after {
   content: "";
@@ -498,24 +491,6 @@ input[type="file"]{display:none}
 }
 #app .add-hero p { color: var(--fg-dim); font-size: 14.5px; }
 
-/* Stat row */
-#app .add-value-strip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 26px;
-  border-radius: 22px;
-  backdrop-filter: none; /* reset, re-applied via shared rule */
-}
-#app .avs-label {
-  font: 600 10.5px/1 'Geist', ui-sans-serif, sans-serif;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--fg);
-  opacity: 0.85;
-}
-#app .avs-count { font-size: 12.5px; color: var(--fg-dim); margin-top: 6px; }
-#app .avs-value { font: 700 22px/1 'Geist', ui-sans-serif, sans-serif; font-variant-numeric: tabular-nums; color: var(--fg); }
 
 /* Prompt card */
 #app .conv-input-wrap {
@@ -684,6 +659,18 @@ input[type="file"]{display:none}
 #app .recent-card { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
 #app .recent-name { color: var(--fg); }
 #app .recent-img { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.10); }
+.add-stats-row{display:grid;grid-template-columns:1fr 2fr 1fr;gap:12px;margin-bottom:16px}
+.add-stat-card{background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.2);border-radius:18px;padding:16px 18px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.add-stat-wide{padding:14px 18px}
+.add-stat-eyebrow{font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:8px;font-weight:600}
+.add-stat-name{font-family:"DM Serif Display",serif;font-size:22px;color:#fff;line-height:1.1;font-weight:400}
+.add-stat-sub{font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px}
+.mini-graph{width:100%;height:56px;display:block}
+.mini-pie{width:52px;height:52px;display:block;margin:0 auto 6px}
+.pie-legend{display:flex;flex-wrap:wrap;gap:4px 8px;justify-content:center}
+.pie-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:3px;vertical-align:middle}
+.pie-label{font-size:9px;color:rgba(255,255,255,0.5);white-space:nowrap}
+@media(max-width:640px){.add-stats-row{grid-template-columns:1fr 1fr;}.add-stat-wide{grid-column:1/-1;order:-1}}
 </style>
 </head>
 <body>
@@ -868,9 +855,35 @@ input[type="file"]{display:none}
           <h2>Ready to Archive</h2>
           <p>What did you just get?</p>
         </div>
-        <div class="add-value-strip" id="add-value-strip">
-          <div><div class="avs-label">Your Archive</div><div class="avs-count" id="avs-count">0 items</div></div>
-          <div class="avs-value" id="avs-value">$0</div>
+        <div class="add-stats-row">
+          <!-- Welcome card -->
+          <div class="add-stat-card" id="welcome-card">
+            <div class="add-stat-eyebrow">WELCOME BACK</div>
+            <div class="add-stat-name" id="welcome-name">Collector</div>
+            <div class="add-stat-sub" id="welcome-count">0 items</div>
+          </div>
+
+          <!-- Line graph card -->
+          <div class="add-stat-card add-stat-wide">
+            <div class="add-stat-eyebrow">COLLECTION VALUE</div>
+            <svg class="mini-graph" viewBox="0 0 200 60" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.3)"/>
+                  <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                </linearGradient>
+              </defs>
+              <path id="graph-fill" d="" fill="url(#lineGrad)"/>
+              <path id="graph-line" d="" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <!-- Pie chart card -->
+          <div class="add-stat-card">
+            <div class="add-stat-eyebrow">DIVERSITY</div>
+            <svg class="mini-pie" viewBox="0 0 60 60" id="pie-chart"></svg>
+            <div class="pie-legend" id="pie-legend"></div>
+          </div>
         </div>
 
         <!-- State: Upload -->
@@ -1683,8 +1696,73 @@ function updateProfileStats(){
 // ── STATS UPDATE ──
 function updateStats(){
   const total=coll.reduce((s,i)=>s+Number(i.val||0),0);
-  document.getElementById('avs-value').textContent='$'+total.toLocaleString();
-  document.getElementById('avs-count').textContent=coll.length+' item'+(coll.length!==1?'s':'');
+  const name=user?.name||'Collector';
+  const welcomeEl=document.getElementById('welcome-name');
+  const countEl=document.getElementById('welcome-count');
+  if(welcomeEl)welcomeEl.textContent=name.split(' ')[0];
+  if(countEl)countEl.textContent=coll.length+' item'+(coll.length!==1?'s':'');
+  updateMiniGraph(total);
+  updatePieChart();
+}
+
+function updateMiniGraph(currentTotal){
+  const line=document.getElementById('graph-line');
+  const fill=document.getElementById('graph-fill');
+  if(!line||!fill)return;
+  const base=Math.max(1000,currentTotal*0.6);
+  const samples=[
+    base*0.62,base*0.68,base*0.71,base*0.75,base*0.82,
+    base*0.88,base*0.91,base*0.95,base*1.0,
+    Math.max(currentTotal,base*1.05)
+  ];
+  const W=200,H=60,pad=4;
+  const min=Math.min(...samples),max=Math.max(...samples);
+  const range=max-min||1;
+  const pts=samples.map((v,i)=>{
+    const x=pad+(i/(samples.length-1))*(W-pad*2);
+    const y=H-pad-(((v-min)/range)*(H-pad*2));
+    return[x,y];
+  });
+  const d=pts.map((p,i)=>(i===0?'M':'L')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  line.setAttribute('d',d);
+  fill.setAttribute('d',d+' L'+(W-pad)+' '+H+' L'+pad+' '+H+' Z');
+}
+
+function updatePieChart(){
+  const pie=document.getElementById('pie-chart');
+  const legend=document.getElementById('pie-legend');
+  if(!pie||!legend)return;
+  const colors=['#5b9bd5','#63b876','#e98a64','#c47dd4','#f0c84a','#7ec8c8'];
+  const cats={};
+  coll.forEach(i=>{cats[i.cat]=(cats[i.cat]||0)+1;});
+  const entries=Object.entries(cats);
+  if(!entries.length){
+    pie.innerHTML='<circle cx="30" cy="30" r="24" fill="rgba(255,255,255,0.1)"/>';
+    legend.innerHTML='';
+    return;
+  }
+  const total=entries.reduce((s,e)=>s+e[1],0);
+  let angle=-Math.PI/2;
+  const cx=30,cy=30,r=24,inner=14;
+  let svg='';
+  legend.innerHTML='';
+  entries.forEach(([cat,count],i)=>{
+    const slice=(count/total)*Math.PI*2;
+    const x1=cx+r*Math.cos(angle);
+    const y1=cy+r*Math.sin(angle);
+    const x2=cx+r*Math.cos(angle+slice);
+    const y2=cy+r*Math.sin(angle+slice);
+    const ix1=cx+inner*Math.cos(angle);
+    const iy1=cy+inner*Math.sin(angle);
+    const ix2=cx+inner*Math.cos(angle+slice);
+    const iy2=cy+inner*Math.sin(angle+slice);
+    const large=slice>Math.PI?1:0;
+    const color=colors[i%colors.length];
+    svg+=`<path d="M${ix1.toFixed(2)} ${iy1.toFixed(2)} L${x1.toFixed(2)} ${y1.toFixed(2)} A${r} ${r} 0 ${large} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} L${ix2.toFixed(2)} ${iy2.toFixed(2)} A${inner} ${inner} 0 ${large} 0 ${ix1.toFixed(2)} ${iy1.toFixed(2)} Z" fill="${color}" opacity="0.9"/>`;
+    legend.innerHTML+=`<span class="pie-label"><span class="pie-dot" style="background:${color}"></span>${cat}</span>`;
+    angle+=slice;
+  });
+  pie.innerHTML=svg;
 }
 
 // ── MILESTONE CHECK ──
