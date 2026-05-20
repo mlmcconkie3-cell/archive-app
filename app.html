@@ -130,13 +130,10 @@ body{font-family:"DM Sans",sans-serif;min-height:100vh;color:var(--brown);overfl
 .recent-name{font-size:9px;color:var(--brown);padding:4px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
 
 /* AI identification states */
-.analyzing-wrap{background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.4);border-radius:var(--r);padding:40px 20px;text-align:center;margin-bottom:16px;backdrop-filter:blur(20px)}
-.pulse-wrap{width:56px;height:56px;margin:0 auto 16px;position:relative;display:flex;align-items:center;justify-content:center}
-.pulse-ring{position:absolute;width:56px;height:56px;border-radius:50%;border:1.5px solid var(--brown);animation:pr 1.4s ease-out infinite}
-.pulse-dot{width:18px;height:18px;border-radius:50%;background:var(--brown)}
-@keyframes pr{0%{transform:scale(0.7);opacity:1}100%{transform:scale(1.7);opacity:0}}
-.analyzing-title{font-size:15px;font-weight:400;color:var(--brown);margin-bottom:4px}
-.analyzing-sub{font-size:13px;color:var(--brown2)}
+.analyzing-wrap{text-align:center;padding:60px 20px}
+.spinner{width:36px;height:36px;border:2.5px solid rgba(255,255,255,0.15);border-top-color:rgba(255,255,255,0.9);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.analyzing-title{font-size:14px;color:rgba(255,255,255,0.6);font-weight:400}
 .prev-img{width:100%;max-height:200px;object-fit:cover;border-radius:var(--r);margin-bottom:14px;border:1px solid rgba(255,255,255,0.3)}
 
 /* Reveal card */
@@ -430,8 +427,7 @@ input[type="file"]{display:none}
 #app .conv-input-wrap,
 #app .add-value-strip,
 #app .qa-btn,
-#app .reveal-card,
-#app .analyzing-wrap {
+#app .reveal-card {
   position: relative;
   isolation: isolate;
   background: rgba(255,255,255, var(--glass-alpha));
@@ -449,8 +445,7 @@ input[type="file"]{display:none}
 #app .conv-input-wrap::before,
 #app .add-value-strip::before,
 #app .qa-btn::before,
-#app .reveal-card::before,
-#app .analyzing-wrap::before {
+#app .reveal-card::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -468,8 +463,7 @@ input[type="file"]{display:none}
 #app .conv-input-wrap::after,
 #app .add-value-strip::after,
 #app .qa-btn::after,
-#app .reveal-card::after,
-#app .analyzing-wrap::after {
+#app .reveal-card::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -570,8 +564,8 @@ input[type="file"]{display:none}
 #app .qa-title { font-size: 14.5px; font-weight: 600; color: var(--fg); }
 #app .qa-sub { font-size: 12.5px; color: var(--fg-dim); }
 
-/* Reveal / analyze cards in dark theme */
-#app .reveal-card, #app .analyzing-wrap {
+/* Reveal card in dark theme */
+#app .reveal-card {
   border-radius: 22px;
   background: rgba(255,255,255, var(--glass-alpha));
 }
@@ -587,9 +581,7 @@ input[type="file"]{display:none}
 #app .ei::placeholder { color: var(--fg-dim); }
 #app .add-confirm-btn { background: rgba(63,166,47,0.85); border: none; }
 #app .add-confirm-btn:hover { opacity: 0.9; }
-#app .analyzing-title, #app .analyzing-sub { color: var(--fg); }
-#app .pulse-ring { border-color: rgba(244,236,226,0.6); }
-#app .pulse-dot { background: var(--fg); }
+#app .analyzing-title { color: var(--fg); }
 #app .success-title { color: var(--fg); }
 #app .success-sub, #app .success-item-name { color: var(--fg-dim); }
 #app .success-item-val { color: var(--accent); }
@@ -924,9 +916,8 @@ input[type="file"]{display:none}
         <div id="s-analyzing" class="hidden">
           <img id="prev-img" class="prev-img hidden">
           <div class="analyzing-wrap">
-            <div class="pulse-wrap"><div class="pulse-ring"></div><div class="pulse-dot"></div></div>
-            <div class="analyzing-title" id="analyzing-txt">AI is identifying your item...</div>
-            <div class="analyzing-sub">Checking category, condition & market value</div>
+            <div class="spinner"></div>
+            <div class="analyzing-title" id="analyzing-txt">Identifying...</div>
           </div>
         </div>
 
