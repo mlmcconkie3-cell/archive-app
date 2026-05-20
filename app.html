@@ -107,7 +107,7 @@ body{font-family:"DM Sans",sans-serif;min-height:100vh;color:var(--brown);overfl
 .conv-send:hover{opacity:0.85}
 
 /* Quick add shortcuts */
-.quick-add{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.quick-add{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
 .qa-btn{background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.4);border-radius:14px;padding:16px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all 0.2s;backdrop-filter:blur(10px);font-family:"DM Sans",sans-serif}
 .qa-btn:hover{background:rgba(255,255,255,0.32);transform:translateY(-2px)}
 .qa-icon{font-size:22px}
@@ -671,6 +671,21 @@ input[type="file"]{display:none}
 .pie-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:3px;vertical-align:middle}
 .pie-label{font-size:9px;color:rgba(255,255,255,0.5);white-space:nowrap}
 @media(max-width:640px){.add-stats-row{grid-template-columns:1fr 1fr;}.add-stat-wide{grid-column:1/-1;order:-1}}
+@keyframes voicePulse{
+  0%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,255,255,0.3)}
+  50%{transform:scale(1.08);box-shadow:0 0 0 16px rgba(255,255,255,0)}
+  100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,255,255,0)}
+}
+@keyframes voiceActive{
+  0%{border-color:rgba(100,220,140,0.4);box-shadow:0 0 0 0 rgba(100,220,140,0.3)}
+  50%{border-color:rgba(100,220,140,0.9);box-shadow:0 0 0 20px rgba(100,220,140,0)}
+  100%{border-color:rgba(100,220,140,0.4);box-shadow:0 0 0 0 rgba(100,220,140,0)}
+}
+.voice-listening #voice-ring{
+  animation:voiceActive 0.8s ease-in-out infinite;
+  background:rgba(100,220,140,0.15);
+  border-color:rgba(100,220,140,0.6);
+}
 </style>
 </head>
 <body>
@@ -959,6 +974,10 @@ input[type="file"]{display:none}
               <div class="qa-icon">🖼️</div>
               <div class="qa-text"><span class="qa-title">Upload photo</span><span class="qa-sub">From your library</span></div>
             </div>
+            <div class="qa-btn" id="voice-btn" onclick="startVoice()">
+              <div class="qa-icon">🎤</div>
+              <div class="qa-text"><span class="qa-title">Voice add</span><span class="qa-sub">Speak to add items</span></div>
+            </div>
           </div>
           <input type="file" id="fi-lib" accept="image/*" onchange="handleFile(this.files[0])">
 
@@ -1151,6 +1170,20 @@ input[type="file"]{display:none}
       </button>
     </div>
   </nav>
+
+  <!-- VOICE OVERLAY -->
+  <div id="voice-overlay" class="hidden" style="position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px)">
+    <div style="text-align:center;padding:40px">
+      <div id="voice-ring" style="width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;animation:voicePulse 1.2s ease-in-out infinite">
+        <span style="font-size:40px">🎤</span>
+      </div>
+      <div id="voice-status" style="font-size:18px;color:#fff;margin-bottom:8px;font-family:'DM Serif Display',serif">Listening...</div>
+      <div id="voice-transcript" style="font-size:14px;color:rgba(255,255,255,0.6);min-height:20px;max-width:300px;margin:0 auto 28px;line-height:1.5"></div>
+      <button onclick="stopVoice()" style="padding:12px 28px;background:rgba(255,255,255,0.15);border:0.5px solid rgba(255,255,255,0.3);border-radius:999px;color:#fff;font-size:14px;cursor:pointer;font-family:'Geist',sans-serif">
+        Done
+      </button>
+    </div>
+  </div>
 
 </div>
 
@@ -1626,6 +1659,87 @@ function renderRecentStrip(){
     c.onclick=()=>openDetail(coll.indexOf(item));
     scroll.appendChild(c);
   });
+}
+
+// ── VOICE INPUT ──
+let recognition = null;
+let voiceTranscript = '';
+
+function startVoice(){
+  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){
+    alert('Voice input is not supported in this browser. Try Chrome!');
+    return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+  voiceTranscript = '';
+
+  recognition.onstart = function(){
+    show('voice-overlay');
+    document.getElementById('voice-overlay').classList.add('voice-listening');
+    document.getElementById('voice-status').textContent = 'Listening...';
+    document.getElementById('voice-transcript').textContent = '';
+  };
+
+  recognition.onresult = function(event){
+    let interim = '';
+    let final = '';
+    for(let i = event.resultIndex; i < event.results.length; i++){
+      if(event.results[i].isFinal){
+        final += event.results[i][0].transcript;
+      } else {
+        interim += event.results[i][0].transcript;
+      }
+    }
+    voiceTranscript += final;
+    document.getElementById('voice-transcript').textContent = voiceTranscript || interim;
+    document.getElementById('voice-status').textContent = interim ? 'Hearing you...' : 'Listening...';
+  };
+
+  recognition.onerror = function(e){
+    document.getElementById('voice-status').textContent = 'Could not hear you — try again';
+    setTimeout(stopVoice, 1500);
+  };
+
+  recognition.onend = function(){
+    if(voiceTranscript.trim()){
+      processVoiceInput(voiceTranscript.trim());
+    }
+  };
+
+  recognition.start();
+}
+
+function stopVoice(){
+  if(recognition){
+    recognition.stop();
+    recognition = null;
+  }
+  hide('voice-overlay');
+  document.getElementById('voice-overlay').classList.remove('voice-listening');
+}
+
+function processVoiceInput(transcript){
+  hide('voice-overlay');
+  const input = document.getElementById('conv-input');
+  if(input){
+    input.value = transcript;
+    autoResize(input);
+    updateSendBtn && updateSendBtn();
+  }
+  document.getElementById('voice-status').textContent = 'Listening...';
+  document.getElementById('voice-transcript').textContent = '';
+
+  const keywords = ['just got','just bought','just picked up','just found','adding','add','i have','i got','i bought','i found'];
+  const hasKeyword = keywords.some(function(k){ return transcript.toLowerCase().includes(k); });
+  if(hasKeyword){
+    document.getElementById('analyzing-txt').textContent = 'Identifying from voice: "' + transcript + '"...';
+    setState('analyzing');
+    identifyFromText(transcript);
+  }
 }
 
 // ── VIEWS ──
