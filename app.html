@@ -156,10 +156,10 @@ body{font-family:"DM Sans",sans-serif;min-height:100vh;color:var(--brown);overfl
 
 /* Success */
 .success-screen{text-align:center;padding:44px 18px;animation:fu 0.4s ease forwards}
-.success-circle{width:70px;height:70px;border-radius:50%;background:rgba(45,138,78,0.14);border:1px solid rgba(45,138,78,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;animation:pi 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;box-shadow:0 0 30px rgba(45,138,78,0.15)}
-.success-circle.gold{background:rgba(212,168,83,0.2);border-color:rgba(212,168,83,0.4);box-shadow:0 0 30px rgba(212,168,83,0.25)}
-@keyframes pi{from{transform:scale(0)}to{transform:scale(1)}}
-.success-title{font-family:"DM Serif Display",serif;font-size:26px;color:var(--brown);margin-bottom:5px;font-weight:400}
+.success-circle{width:80px;height:80px;border-radius:50%;background:rgba(45,138,78,0.2);border:1.5px solid rgba(45,138,78,0.5);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;animation:successPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;box-shadow:0 0 40px rgba(45,138,78,0.2)}
+.success-circle.gold{background:rgba(212,168,83,0.25);border-color:rgba(212,168,83,0.6);box-shadow:0 0 40px rgba(212,168,83,0.3)}
+@keyframes successPop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.success-title{font-family:'DM Serif Display',serif;font-size:28px;color:#fff;margin-bottom:6px;font-weight:400}
 .success-sub{font-size:13px;color:var(--brown2);margin-bottom:20px}
 .success-item-card{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:var(--rs);padding:13px 16px;text-align:left;margin-bottom:18px;backdrop-filter:blur(10px)}
 .success-item-name{font-size:14px;font-weight:500;color:var(--brown)}
@@ -182,7 +182,7 @@ body{font-family:"DM Sans",sans-serif;min-height:100vh;color:var(--brown);overfl
 .stockx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px}
 .sx-card{background:rgba(255,255,255,0.2);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);border:1px solid rgba(255,255,255,0.38);border-radius:14px;overflow:hidden;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 12px rgba(0,0,0,0.07),inset 0 1px 0 rgba(255,255,255,0.5)}
 .sx-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.12);border-color:rgba(255,255,255,0.6)}
-.sx-img{width:100%;height:140px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:44px;border-bottom:1px solid rgba(255,255,255,0.2);overflow:hidden;position:relative}
+.sx-img{width:100%;height:160px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:44px;border-bottom:1px solid rgba(255,255,255,0.2);overflow:hidden;position:relative}
 .sx-img img{width:100%;height:100%;object-fit:cover}
 .sx-body{padding:11px 13px}
 .sx-name{font-size:12px;font-weight:500;color:var(--brown);line-height:1.35;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -327,7 +327,7 @@ body{font-family:"DM Sans",sans-serif;min-height:100vh;color:var(--brown);overfl
 .delete-cancel-btn{flex:1;padding:11px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:var(--rs);color:var(--brown);cursor:pointer;font-family:"DM Sans",sans-serif;font-size:13px}
 
 input[type="file"]{display:none}
-@media(max-width:640px){.coll-layout{flex-direction:column}.coll-right{width:100%}.top-movers{grid-template-columns:1fr 1fr}.stockx-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.coll-layout{flex-direction:column}.coll-right{width:100%}.top-movers{grid-template-columns:1fr 1fr}.stockx-grid{grid-template-columns:repeat(2,1fr)}.add-strips-row{grid-template-columns:1fr 1fr}.add-strip-pie{grid-column:span 2}.add-view{padding:0 4px}.reveal-card{padding:16px}.detail-hero{height:200px}.detail-actions{grid-template-columns:1fr 1fr}.coll-header-row{flex-direction:column;gap:8px}}
 
 /* ═══════════════════════════════════════════════════════════════════
    REDESIGNED APP — Archive UI Design System
@@ -671,6 +671,9 @@ input[type="file"]{display:none}
 .pie-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:3px;vertical-align:middle}
 .pie-label{font-size:9px;color:rgba(255,255,255,0.5);white-space:nowrap}
 @media(max-width:640px){.add-stats-row{grid-template-columns:1fr 1fr;}.add-stat-wide{grid-column:1/-1;order:-1}}
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden}
+.confetti-piece{position:absolute;width:8px;height:8px;top:-10px;animation:confettiFall linear forwards}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
 @keyframes voicePulse{
   0%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,255,255,0.3)}
   50%{transform:scale(1.08);box-shadow:0 0 0 16px rgba(255,255,255,0)}
@@ -689,6 +692,7 @@ input[type="file"]{display:none}
 </style>
 </head>
 <body>
+<div class="confetti-container" id="confetti-container"></div>
 
 <!-- WEBGL MESH GRADIENT -->
 <canvas id="mesh-canvas"></canvas>
@@ -981,6 +985,12 @@ input[type="file"]{display:none}
           </div>
           <input type="file" id="fi-lib" accept="image/*" onchange="handleFile(this.files[0])">
 
+          <div id="empty-state" style="text-align:center;padding:32px 20px;display:none">
+            <div style="font-size:48px;margin-bottom:12px">📦</div>
+            <div style="font-family:'DM Serif Display',serif;font-size:20px;color:#fff;margin-bottom:6px;font-weight:400">Your Archive starts here</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6">Photograph anything you own and AI will identify it, value it, and add it to your collection instantly.</div>
+          </div>
+
           <div class="recent-strip" id="recent-strip" style="display:none">
             <div class="recent-label">Recently added</div>
             <div class="recent-scroll" id="recent-scroll"></div>
@@ -1012,7 +1022,7 @@ input[type="file"]{display:none}
             <div class="edit-section-label">Review & edit before saving</div>
             <div class="edit-row">
               <input class="ei" id="e-name" placeholder="Item name">
-              <input class="ei" id="e-paid" type="number" placeholder="What you paid ($)">
+              <input class="ei" id="e-paid" type="number" placeholder="💰 What you paid ($)" style="border-color:rgba(240,185,74,0.4);background:rgba(240,185,74,0.08)">
             </div>
             <div class="edit-row">
               <input class="ei" id="e-place" placeholder="Place of purchase">
@@ -1548,7 +1558,14 @@ async function identifyFromText(description){
     showReveal(item);
   }catch(e){
     console.error('Text identification error:',e);
-    showReveal({name:'Could not identify',sub:'Try adding more detail to your description',cat:'Other',cond:'Unknown',val:0,conf:'0%',emoji:'❓'});
+    document.getElementById('analyzing-txt').textContent='';
+    setState('upload');
+    const errBanner=document.createElement('div');
+    errBanner.style.cssText='background:rgba(200,80,50,0.15);border:0.5px solid rgba(200,80,50,0.4);border-radius:12px;padding:12px 16px;font-size:13px;color:rgba(255,180,160,0.9);margin-bottom:14px;text-align:center';
+    errBanner.textContent='Could not identify — try adding more detail or attaching a photo';
+    const uploadEl=document.getElementById('s-upload');
+    uploadEl.insertBefore(errBanner,uploadEl.firstChild);
+    setTimeout(function(){errBanner.remove();},4000);
   }
 }
 
@@ -1585,7 +1602,14 @@ async function identifyItem(file){
     showReveal(item);
   }catch(e){
     console.error('Identification error:',e);
-    showReveal({name:'Could not identify',sub:'Try a clearer photo',cat:'Other',cond:'Unknown',val:0,conf:'0%',emoji:'❓'});
+    document.getElementById('analyzing-txt').textContent='';
+    setState('upload');
+    const errBanner=document.createElement('div');
+    errBanner.style.cssText='background:rgba(200,80,50,0.15);border:0.5px solid rgba(200,80,50,0.4);border-radius:12px;padding:12px 16px;font-size:13px;color:rgba(255,180,160,0.9);margin-bottom:14px;text-align:center';
+    errBanner.textContent='Could not identify — try a clearer photo or better lighting';
+    const uploadEl=document.getElementById('s-upload');
+    uploadEl.insertBefore(errBanner,uploadEl.firstChild);
+    setTimeout(function(){errBanner.remove();},4000);
   }
 }
 function showReveal(item){
@@ -1624,6 +1648,7 @@ async function confirmAdd(){
   // Gold circle for high-value items
   if(cur.val>=1000){document.getElementById('success-circle').className='success-circle gold';}
   else{document.getElementById('success-circle').className='success-circle';}
+  if(cur.val>=500){launchConfetti();}
   setState('success');
   renderRecentStrip();
   checkMilestones();
@@ -1647,6 +1672,8 @@ function setState(s){
   });
 }
 function renderRecentStrip(){
+  var emptyState=document.getElementById('empty-state');
+  if(emptyState) emptyState.style.display=coll.length===0?'block':'none';
   if(coll.length===0){hide('recent-strip');return;}
   show('recent-strip');
   const scroll=document.getElementById('recent-scroll');
@@ -1659,6 +1686,29 @@ function renderRecentStrip(){
     c.onclick=()=>openDetail(coll.indexOf(item));
     scroll.appendChild(c);
   });
+}
+
+// ── CONFETTI ──
+function launchConfetti(){
+  var container=document.getElementById('confetti-container');
+  var colors=['#64c882','#e98a64','#f0b94a','#7ab4ea','#c879d9','#fff'];
+  for(var i=0;i<80;i++){
+    (function(i){
+      setTimeout(function(){
+        var piece=document.createElement('div');
+        piece.className='confetti-piece';
+        piece.style.left=Math.random()*100+'vw';
+        piece.style.background=colors[Math.floor(Math.random()*colors.length)];
+        piece.style.width=(Math.random()*8+4)+'px';
+        piece.style.height=(Math.random()*8+4)+'px';
+        piece.style.borderRadius=Math.random()>0.5?'50%':'2px';
+        piece.style.animationDuration=(Math.random()*2+1.5)+'s';
+        piece.style.animationDelay='0s';
+        container.appendChild(piece);
+        setTimeout(function(){piece.remove();},3500);
+      },i*30);
+    })(i);
+  }
 }
 
 // ── VOICE INPUT ──
@@ -2080,6 +2130,7 @@ function checkMilestones(){
   });
 }
 function showMilestoneBanner(msg){
+  launchConfetti();
   const b=document.getElementById('milestone-banner');
   b.textContent=msg;b.classList.remove('hidden');
   setTimeout(()=>b.classList.add('hidden'),5000);
