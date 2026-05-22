@@ -7,12 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--r:16px;--rs:10px;--brown:#1A120A;--brown2:#5C4030;--brown3:#8A7262;--gold:#C4622A;--green:#2d8a4e;--cream:rgba(255,255,255,0.92);--glass:rgba(255,255,255,0.22);--glassborder:rgba(255,255,255,0.45);--glassshadow:0 8px 32px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.6)}
-body{font-family:"DM Sans",sans-serif;min-height:100vh;color:var(--brown);overflow-x:hidden;background:transparent}
+:root{--r:16px;--rs:10px;--brown:#f4ece2;--brown2:rgba(244,236,226,0.65);--brown3:rgba(244,236,226,0.4);--gold:#C4622A;--green:#2d8a4e;--cream:rgba(255,255,255,0.92);--glass:rgba(255,255,255,0.22);--glassborder:rgba(255,255,255,0.45);--glassshadow:0 8px 32px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.6)}
+body{font-family:"DM Sans",sans-serif;min-height:100vh;color:var(--brown);overflow-x:hidden;background:#000}
 .hidden{display:none!important}
 
 /* WEBGL BACKGROUND */
-#mesh-canvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;background:#0c2a27}
+#bg-scene{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;background:#000;display:block}
 .z1{position:relative;z-index:1}
 .z2{position:relative;z-index:2}
 
@@ -706,7 +706,7 @@ input[type="file"]{display:none}
 <div class="confetti-container" id="confetti-container"></div>
 
 <!-- WEBGL MESH GRADIENT -->
-<canvas id="mesh-canvas"></canvas>
+<canvas id="bg-scene" aria-hidden="true"></canvas>
 
 <!-- LOADING -->
 <div id="loading">
@@ -1209,32 +1209,114 @@ input[type="file"]{display:none}
 </div>
 
 <script>
-// ── WEBGL MESH GRADIENT ──
-document.addEventListener('DOMContentLoaded', function() {
-(function(){
-  const canvas=document.getElementById('mesh-canvas');
-  const gl=canvas.getContext('webgl')||canvas.getContext('experimental-webgl');
-  if(!gl){canvas.style.display='none';document.body.style.background='linear-gradient(135deg,#72b9bb,#ffd1bd,#dbf4a4,#b5d9d9)';return;}
-  const VS=`attribute vec2 a_pos;void main(){gl_Position=vec4(a_pos,0.0,1.0);}`;
-  const FS=`precision highp float;uniform float u_time;uniform vec2 u_res;mat2 rot2(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float vnoise(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1,0)),u.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),u.y);}void main(){vec2 uv=gl_FragCoord.xy/u_res;float t=u_time*0.4;vec2 n;n.x=vnoise(uv*2.8+vec2(t*0.28,0.0))-0.5;n.y=vnoise(uv*2.8+vec2(0.0,t*0.28+47.3))-0.5;uv+=n*0.1;vec2 ctr=vec2(0.5);vec2 dc=uv-ctr;float ang=0.5*(1.0-length(dc))*1.6+t*0.18;uv=ctr+rot2(ang)*dc;vec2 pts[5];pts[0]=vec2(0.14+0.13*sin(t*0.68),0.24+0.13*cos(t*0.52));pts[1]=vec2(0.80+0.10*cos(t*0.59+2.1),0.14+0.10*sin(t*0.77+0.7));pts[2]=vec2(0.87+0.08*sin(t*0.91+3.5),0.80+0.08*cos(t*0.43+1.3));pts[3]=vec2(0.23+0.12*cos(t*0.53+4.2),0.87+0.12*sin(t*0.66+2.0));pts[4]=vec2(0.50+0.15*sin(t*0.41+1.1),0.50+0.15*cos(t*0.63+3.1));vec3 cols[5];cols[0]=vec3(0.447,0.725,0.733);cols[1]=vec3(0.710,0.851,0.851);cols[2]=vec3(1.000,0.820,0.741);cols[3]=vec3(1.000,0.922,0.878);cols[4]=vec3(0.549,0.773,0.722);vec3 col=vec3(0.0);float total=0.0;for(int i=0;i<5;i++){float d=length(uv-pts[i]);float w=1.0/pow(d+1e-4,6.0);col+=w*cols[i];total+=w;}col/=total;gl_FragColor=vec4(col,1.0);}`;
-  function mkShader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s;}
-  const prog=gl.createProgram();
-  gl.attachShader(prog,mkShader(gl.VERTEX_SHADER,VS));
-  gl.attachShader(prog,mkShader(gl.FRAGMENT_SHADER,FS));
-  gl.linkProgram(prog);gl.useProgram(prog);
-  const buf=gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
-  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
-  const aPos=gl.getAttribLocation(prog,'a_pos');
-  gl.enableVertexAttribArray(aPos);gl.vertexAttribPointer(aPos,2,gl.FLOAT,false,0,0);
-  const uTime=gl.getUniformLocation(prog,'u_time');
-  const uRes=gl.getUniformLocation(prog,'u_res');
-  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;gl.viewport(0,0,canvas.width,canvas.height);gl.uniform2f(uRes,canvas.width,canvas.height);}
-  window.addEventListener('resize',resize);resize();
-  let t0=null;
-  function frame(ts){if(!t0)t0=ts;gl.uniform1f(uTime,(ts-t0)/1000);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);requestAnimationFrame(frame);}
-  requestAnimationFrame(frame);
-})();
+// ── WEBGL LIQUID MERCURY ──
+document.addEventListener('DOMContentLoaded', function(){
+  var canvas = document.getElementById('bg-scene');
+  var gl = canvas.getContext('webgl', {antialias:false, powerPreference:'high-performance'});
+  if(!gl){ canvas.style.background='#0c2a27'; return; }
+
+  var VERT = 'attribute vec2 a_pos; void main(){ gl_Position = vec4(a_pos,0.0,1.0); }';
+  var FRAG = [
+    'precision highp float;',
+    'uniform vec2 u_res;',
+    'uniform vec2 u_mouse;',
+    'uniform vec2 u_click;',
+    'uniform float u_clickAge;',
+    'uniform float u_time;',
+    'vec2 toUV(vec2 p){ return (p - 0.5 * u_res) / u_res.y; }',
+    'void main(){',
+    '  vec2 uv = toUV(gl_FragCoord.xy);',
+    '  vec2 m  = toUV(u_mouse);',
+    '  float t = u_time * 0.35;',
+    '  float v = 0.0;',
+    '  v += sin(uv.x * 3.2 + t);',
+    '  v += sin(uv.y * 4.0 + t * 1.27);',
+    '  v += sin((uv.x + uv.y) * 3.4 + t * 0.7);',
+    '  v += sin(length(uv - m) * 6.5 - t * 2.1);',
+    '  v += sin(length(uv + m * 0.6) * 4.2 - t * 0.9);',
+    '  v *= 0.2;',
+    '  float k = clamp(0.5 + 0.5 * v, 0.0, 1.0);',
+    '  k = pow(k, 1.6);',
+    '  vec3 cBlack    = vec3(0.004, 0.005, 0.008);',
+    '  vec3 cGraphite = vec3(0.110, 0.120, 0.140);',
+    '  vec3 cSilver   = vec3(0.820, 0.860, 0.920);',
+    '  vec3 col = mix(cBlack, cGraphite, smoothstep(0.05, 0.70, k));',
+    '  col      = mix(col,    cSilver,   smoothstep(0.82, 1.00, k));',
+    '  float md = length(uv - m);',
+    '  col += exp(-md * 3.5) * vec3(0.05, 0.06, 0.08);',
+    '  col += exp(-md * 9.0) * vec3(0.22, 0.24, 0.28);',
+    '  if(u_clickAge >= 0.0){',
+    '    vec2 cuv = (u_click - 0.5 * u_res) / u_res.y;',
+    '    float d = length(uv - cuv);',
+    '    float burst = exp(-d * 3.5 / (0.08 + u_clickAge * 0.6)) * exp(-u_clickAge * 1.8);',
+    '    col += burst * vec3(0.85, 0.90, 0.98);',
+    '  }',
+    '  col *= 1.0 - 0.45 * smoothstep(0.2, 1.3, length(uv));',
+    '  gl_FragColor = vec4(col, 1.0);',
+    '}'
+  ].join('\n');
+
+  function compile(src, type){
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    return s;
+  }
+  var prog = gl.createProgram();
+  gl.attachShader(prog, compile(VERT, gl.VERTEX_SHADER));
+  gl.attachShader(prog, compile(FRAG, gl.FRAGMENT_SHADER));
+  gl.linkProgram(prog); gl.useProgram(prog);
+
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  var aPos = gl.getAttribLocation(prog, 'a_pos');
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+  var uRes      = gl.getUniformLocation(prog, 'u_res');
+  var uMouse    = gl.getUniformLocation(prog, 'u_mouse');
+  var uClick    = gl.getUniformLocation(prog, 'u_click');
+  var uClickAge = gl.getUniformLocation(prog, 'u_clickAge');
+  var uTime     = gl.getUniformLocation(prog, 'u_time');
+
+  var DPR_CAP = 1.75;
+  var dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
+  var mouseT = [innerWidth*0.5*dpr, innerHeight*0.5*dpr];
+  var mouse  = mouseT.slice();
+  var click  = mouseT.slice();
+  var clickT = -100;
+  var start  = performance.now();
+
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
+    canvas.width  = Math.floor(innerWidth  * dpr);
+    canvas.height = Math.floor(innerHeight * dpr);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  window.addEventListener('resize', resize); resize();
+
+  window.addEventListener('pointermove', function(e){
+    mouseT = [e.clientX * dpr, (innerHeight - e.clientY) * dpr];
+  });
+  window.addEventListener('pointerdown', function(e){
+    click  = [e.clientX * dpr, (innerHeight - e.clientY) * dpr];
+    clickT = (performance.now() - start) / 1000;
+  });
+
+  function frame(){
+    mouse[0] += (mouseT[0] - mouse[0]) * 0.10;
+    mouse[1] += (mouseT[1] - mouse[1]) * 0.10;
+    var now = (performance.now() - start) / 1000;
+    var age = now - clickT;
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform2f(uMouse, mouse[0], mouse[1]);
+    gl.uniform2f(uClick, click[0], click[1]);
+    gl.uniform1f(uClickAge, age < 3.5 ? age : -1.0);
+    gl.uniform1f(uTime, now);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(frame);
+  }
+  frame();
 });
 
 // ── STATE ──
