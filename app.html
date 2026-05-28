@@ -744,58 +744,76 @@ body.light-mode {
 body.light-mode #bg-scene {
   filter: invert(1) hue-rotate(180deg) brightness(1.1);
 }
-body.light-mode .tabbar-inner {
-  background: rgba(0,0,0,0.06);
-  border-color: rgba(0,0,0,0.10);
+body.light-mode .add-title {
+  color: #1a1208 !important;
+  text-shadow: none;
 }
-body.light-mode .tab, body.light-mode .bn {
-  color: rgba(0,0,0,0.35);
-}
-body.light-mode .tab:hover, body.light-mode .bn:hover {
-  color: rgba(0,0,0,0.75);
-  background: rgba(0,0,0,0.06);
-}
-body.light-mode .tab.active, body.light-mode .bn.active {
-  color: #1a1208;
-  background: rgba(0,0,0,0.10);
-}
-body.light-mode .topbar { background: transparent; }
-body.light-mode .topbar-logo { color: rgba(0,0,0,0.45); }
-body.light-mode .settings-btn {
-  background: rgba(0,0,0,0.06);
-  border-color: rgba(0,0,0,0.10);
-  color: rgba(0,0,0,0.5);
-}
-body.light-mode .add-title { color: rgba(0,0,0,0.88); }
 body.light-mode .conv-input-wrap {
-  background: rgba(0,0,0,0.05);
-  border-color: rgba(0,0,0,0.12);
+  background: rgba(0,0,0,0.06) !important;
+  border-color: rgba(0,0,0,0.14) !important;
 }
-body.light-mode .conv-input { color: #1a1208; }
-body.light-mode .conv-input::placeholder { color: rgba(0,0,0,0.30); }
-body.light-mode .conv-attach {
-  background: rgba(0,0,0,0.05);
-  border-color: rgba(0,0,0,0.10);
-  color: rgba(0,0,0,0.45);
-}
-body.light-mode .conv-send { background: #1a1208; }
+body.light-mode .conv-input { color: #1a1208 !important; }
+body.light-mode .conv-input::placeholder { color: rgba(0,0,0,0.35) !important; }
 body.light-mode .action-pill {
-  background: rgba(0,0,0,0.05);
-  border-color: rgba(0,0,0,0.12);
-  color: rgba(0,0,0,0.55);
+  background: rgba(0,0,0,0.06) !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: rgba(0,0,0,0.60) !important;
 }
 body.light-mode .action-pill:hover {
-  background: rgba(0,0,0,0.09);
-  color: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.10) !important;
+  color: rgba(0,0,0,0.85) !important;
 }
-body.light-mode .add-value-subtle { color: rgba(0,0,0,0.30); }
-body.light-mode .conv-coll-btn {
-  background: rgba(0,0,0,0.06);
-  border-color: rgba(0,0,0,0.12);
-  color: rgba(0,0,0,0.55);
+body.light-mode .add-value-subtle { color: rgba(0,0,0,0.35) !important; }
+body.light-mode .conv-coll-btn,
+body.light-mode #selected-coll-label {
+  background: rgba(0,0,0,0.06) !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: rgba(0,0,0,0.55) !important;
 }
-body.light-mode .glass-card,
-body.light-mode .reveal-card,
+body.light-mode .conv-attach {
+  background: rgba(0,0,0,0.05) !important;
+  border-color: rgba(0,0,0,0.10) !important;
+  color: rgba(0,0,0,0.45) !important;
+}
+body.light-mode .conv-send { background: #1a1208; }
+body.light-mode .topbar { background: transparent; }
+body.light-mode .topbar-logo { color: rgba(0,0,0,0.45) !important; }
+body.light-mode .settings-btn,
+body.light-mode .settings-pill {
+  background: rgba(0,0,0,0.06) !important;
+  border-color: rgba(0,0,0,0.10) !important;
+  color: rgba(0,0,0,0.45) !important;
+}
+body.light-mode .tab,
+body.light-mode .bn { color: rgba(0,0,0,0.35) !important; }
+body.light-mode .tab:hover, body.light-mode .bn:hover {
+  color: rgba(0,0,0,0.75) !important;
+  background: rgba(0,0,0,0.06) !important;
+}
+body.light-mode .tab.active,
+body.light-mode .bn.active {
+  color: #1a1208 !important;
+  background: rgba(0,0,0,0.08) !important;
+}
+body.light-mode .tabbar-inner {
+  background: rgba(255,255,255,0.5) !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+body.light-mode .coll-title,
+body.light-mode .dash-value,
+body.light-mode .profile-header h2,
+body.light-mode .an-value,
+body.light-mode .sx-name,
+body.light-mode .sx-price,
+body.light-mode .profile-item-label,
+body.light-mode .ai-insight-text,
+body.light-mode .dash-section-title,
+body.light-mode .score-number,
+body.light-mode .mover-name,
+body.light-mode .activity-name,
+body.light-mode .cat-perf-name,
+body.light-mode .cat-perf-val { color: #1a1208 !important; }
+body.light-mode .sx-card,
 body.light-mode .an-card,
 body.light-mode .dash-hero,
 body.light-mode .ai-insight-card,
@@ -803,33 +821,36 @@ body.light-mode .cat-perf-row,
 body.light-mode .mover-card,
 body.light-mode .activity-card,
 body.light-mode .collector-score,
-body.light-mode .sx-card,
 body.light-mode .profile-item,
-body.light-mode .profile-avatar-row {
-  background: rgba(255,255,255,0.75);
-  border-color: rgba(0,0,0,0.08);
-  color: #1a1208;
+body.light-mode .profile-avatar-row,
+body.light-mode .reveal-card,
+body.light-mode .analyzing-wrap {
+  background: rgba(255,255,255,0.65) !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  color: #1a1208 !important;
 }
-body.light-mode .coll-title,
-body.light-mode .dash-value,
-body.light-mode .profile-header h2 { color: #1a1208; }
-body.light-mode .sx-name,
-body.light-mode .sx-price,
-body.light-mode .an-value,
-body.light-mode .an-value-sm,
-body.light-mode .dash-section-title,
-body.light-mode .an-label,
-body.light-mode .profile-item-label { color: #1a1208; }
 body.light-mode .filter-btn {
-  background: rgba(0,0,0,0.05);
-  border-color: rgba(0,0,0,0.12);
-  color: rgba(0,0,0,0.55);
+  background: rgba(0,0,0,0.05) !important;
+  border-color: rgba(0,0,0,0.10) !important;
+  color: rgba(0,0,0,0.55) !important;
 }
 body.light-mode .filter-btn.active {
-  background: #1a1208;
-  color: #fff;
-  border-color: #1a1208;
+  background: #1a1208 !important;
+  color: #fff !important;
+  border-color: #1a1208 !important;
 }
+body.light-mode .ic,
+body.light-mode .an-label,
+body.light-mode .an-sub,
+body.light-mode .sx-cat,
+body.light-mode .sx-gain.neu,
+body.light-mode .dash-value-label,
+body.light-mode .dash-change.neu,
+body.light-mode .score-tip,
+body.light-mode .score-label,
+body.light-mode .profile-item-sub,
+body.light-mode .profile-email,
+body.light-mode .profile-section-title { color: rgba(0,0,0,0.45) !important; }
 body, body * {
   transition: background-color 0.3s ease, color 0.2s ease, border-color 0.2s ease;
 }
