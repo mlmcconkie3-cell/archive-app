@@ -1260,7 +1260,7 @@ body, body * {
       </div>
       <div class="profile-section">
         <div class="profile-section-title">Subscription</div>
-        <div class="profile-item"><div class="profile-item-left"><span class="profile-item-icon">⭐</span><div><div class="profile-item-label">Free plan</div><div class="profile-item-sub">Unlimited items, AI scanning</div></div></div><span class="profile-plan-badge">FREE</span></div>
+        <div class="profile-item" onclick="openUpgrade()"><div class="profile-item-left"><span class="profile-item-icon">⭐</span><div><div class="profile-item-label">Free plan</div><div class="profile-item-sub">Unlimited items, AI scanning</div></div></div><span class="profile-item-right">Upgrade →</span></div>
       </div>
       <div class="profile-section">
         <div class="profile-section-title">Collection</div>
@@ -1330,6 +1330,83 @@ body, body * {
       <button onclick="stopVoice()" style="padding:12px 28px;background:rgba(255,255,255,0.15);border:0.5px solid rgba(255,255,255,0.3);border-radius:999px;color:#fff;font-size:14px;cursor:pointer;font-family:'Geist',sans-serif">
         Done
       </button>
+    </div>
+  </div>
+
+  <!-- PAYMENT MODAL -->
+  <div id="payment-modal" class="hidden" style="position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px)">
+    <div style="width:100%;max-width:440px;background:#111;border:0.5px solid rgba(255,255,255,0.12);border-radius:24px;padding:28px;box-shadow:0 24px 60px rgba(0,0,0,0.5)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+        <div>
+          <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#f0ece4;font-weight:400">Upgrade to Pro</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:3px">$9.99/month · Cancel anytime</div>
+        </div>
+        <button onclick="hide('payment-modal')" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">×</button>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px 16px;margin-bottom:20px">
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px">What you get</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,0.75)"><span style="color:#63b876">✓</span> Unlimited items &amp; collections</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,0.75)"><span style="color:#63b876">✓</span> PDF insurance reports</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,0.75)"><span style="color:#63b876">✓</span> Live eBay market prices</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,0.75)"><span style="color:#63b876">✓</span> AI collection assistant</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,0.75)"><span style="color:#63b876">✓</span> Weekly value digest email</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+        <button onclick="selectPayment(this)" style="height:52px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.12);border-radius:12px;color:rgba(255,255,255,0.7);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;transition:all 0.15s">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#003087"><path d="M7.076 21.337H4.272a.641.641 0 01-.633-.74L5.896 2.027A.641.641 0 016.53 1.5h5.326c2.7 0 4.67.61 5.856 1.814.548.558.907 1.14 1.102 1.782.205.672.21 1.4.016 2.22-.007.032-.013.064-.02.097.84.432 1.487 1.03 1.916 1.785.483.856.648 1.885.488 3.063-.194 1.432-.7 2.688-1.506 3.737a7.39 7.39 0 01-2.524 2.059c-.956.485-2.043.73-3.233.73H12.35l-.678 4.295a.641.641 0 01-.633.54H7.076z"/></svg>
+          PayPal
+        </button>
+        <button onclick="selectPayment(this)" style="height:52px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.12);border-radius:12px;color:rgba(255,255,255,0.7);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;transition:all 0.15s">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          Apple Pay
+        </button>
+        <button onclick="selectPayment(this)" style="height:52px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.12);border-radius:12px;color:rgba(255,255,255,0.7);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;transition:all 0.15s">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Google Pay
+        </button>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="flex:1;height:0.5px;background:rgba(255,255,255,0.10)"></div>
+        <span style="font-size:11px;color:rgba(255,255,255,0.3)">or pay with card</span>
+        <div style="flex:1;height:0.5px;background:rgba(255,255,255,0.10)"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+        <div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:6px">Cardholder name</div>
+          <input type="text" placeholder="Full name" style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.12);border-radius:10px;color:#f0ece4;font-size:14px;font-family:'Geist',sans-serif;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+        </div>
+        <div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:6px">Card number</div>
+          <input type="text" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19"
+          oninput="formatCardNumber(this)"
+          style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.12);border-radius:10px;color:#f0ece4;font-size:14px;font-family:'Geist',sans-serif;outline:none;box-sizing:border-box;letter-spacing:0.05em"
+          onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:6px">Expiry</div>
+            <input type="text" placeholder="MM/YY" maxlength="5"
+            oninput="formatExpiry(this)"
+            style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.12);border-radius:10px;color:#f0ece4;font-size:14px;font-family:'Geist',sans-serif;outline:none;box-sizing:border-box"
+            onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+          </div>
+          <div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:6px">CVV</div>
+            <input type="password" placeholder="•••" maxlength="4"
+            style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.12);border-radius:10px;color:#f0ece4;font-size:14px;font-family:'Geist',sans-serif;outline:none;box-sizing:border-box"
+            onfocus="this.style.borderColor='rgba(255,255,255,0.3)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+          </div>
+        </div>
+      </div>
+      <button onclick="handleUpgrade()" style="width:100%;padding:14px;background:#f0ece4;border:none;border-radius:12px;color:#0a0a0a;font-size:15px;font-weight:600;cursor:pointer;font-family:'Geist',sans-serif;transition:opacity 0.15s;letter-spacing:0.01em">
+        Upgrade to Pro · $9.99/mo
+      </button>
+      <div style="text-align:center;margin-top:10px;font-size:11px;color:rgba(255,255,255,0.25)">
+        Secured by Stripe · Cancel anytime
+      </div>
     </div>
   </div>
 
@@ -2010,6 +2087,36 @@ function processVoiceInput(transcript){
     setState('analyzing');
     identifyFromText(transcript);
   }
+}
+
+// ── PAYMENT / UPGRADE ──
+function selectPayment(btn){
+  document.querySelectorAll('#payment-modal button[onclick^="selectPayment"]').forEach(function(b){
+    b.style.borderColor='rgba(255,255,255,0.12)';
+    b.style.background='rgba(255,255,255,0.05)';
+  });
+  btn.style.borderColor='rgba(255,255,255,0.4)';
+  btn.style.background='rgba(255,255,255,0.12)';
+}
+function formatCardNumber(input){
+  var v=input.value.replace(/\s+/g,'').replace(/[^0-9]/gi,'');
+  var matches=v.match(/\d{4,16}/g);
+  var match=matches&&matches[0]||'';
+  var parts=[];
+  for(var i=0,len=match.length;i<len;i+=4){parts.push(match.substring(i,i+4));}
+  input.value=parts.length?parts.join(' '):input.value;
+}
+function formatExpiry(input){
+  var v=input.value.replace(/\D/g,'');
+  if(v.length>=2) v=v.substring(0,2)+'/'+v.substring(2);
+  input.value=v;
+}
+function handleUpgrade(){
+  hide('payment-modal');
+  alert('Payment processing coming soon! Stripe integration is next on the roadmap.');
+}
+function openUpgrade(){
+  show('payment-modal');
 }
 
 // ── MANUAL ADD ──
