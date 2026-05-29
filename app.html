@@ -736,6 +736,79 @@ input[type="file"]{display:none}
 #app .add-hero,
 #app .quick-add { display: none !important; }
 
+/* ── Collection Dropdown (OriginUI DropdownMenu style) ── */
+.coll-dropdown-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.coll-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 60;
+  min-width: 200px;
+  background: #111;
+  border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.3);
+  animation: ddIn 0.14s ease;
+  transform-origin: top left;
+}
+@keyframes ddIn {
+  from { opacity:0; transform:scale(0.95) translateY(-4px); }
+  to   { opacity:1; transform:scale(1)    translateY(0);    }
+}
+.coll-dd-label {
+  padding: 6px 8px 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.30);
+  user-select: none;
+}
+.coll-dd-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 7px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  user-select: none;
+}
+.coll-dd-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.coll-dd-item.coll-dd-active {
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+  font-weight: 500;
+}
+.coll-dd-item-icon { font-size: 15px; line-height: 1; }
+.coll-dd-item-meta { flex:1; }
+.coll-dd-item-name { font-size: 13px; }
+.coll-dd-item-count { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 1px; }
+.coll-dd-active .coll-dd-item-count { color: rgba(255,255,255,0.5); }
+.coll-dd-check { margin-left: auto; color: rgba(255,255,255,0.5); flex-shrink: 0; }
+.coll-dd-sep { height: 0.5px; background: rgba(255,255,255,0.08); margin: 4px -4px; }
+.coll-dd-new { color: rgba(255,255,255,0.45); font-size: 12.5px; }
+.coll-dd-new:hover { color: rgba(255,255,255,0.8); }
+body.light-mode .coll-dropdown {
+  background: #fff;
+  border-color: rgba(0,0,0,0.10);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+}
+body.light-mode .coll-dd-label { color: rgba(0,0,0,0.30); }
+body.light-mode .coll-dd-item { color: rgba(0,0,0,0.70); }
+body.light-mode .coll-dd-item:hover { background: rgba(0,0,0,0.05); color: #1a1208; }
+body.light-mode .coll-dd-item.coll-dd-active { background: rgba(0,0,0,0.08); color: #1a1208; }
+body.light-mode .coll-dd-item-count { color: rgba(0,0,0,0.35); }
+body.light-mode .coll-dd-sep { background: rgba(0,0,0,0.08); }
+body.light-mode .coll-dd-new { color: rgba(0,0,0,0.40); }
+body.light-mode .coll-dd-new:hover { color: #1a1208; }
+
 /* ── Pagination (OriginUI style) ── */
 .pagination {
   display: flex;
@@ -1145,9 +1218,20 @@ body, body * {
           <textarea class="conv-input" id="conv-input" placeholder="Describe what you just acquired..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleConvSubmit()}" oninput="autoResize(this)"></textarea>
           <div class="conv-actions">
             <div class="conv-left">
-              <div class="conv-coll-btn" id="coll-selector" onclick="toggleCollSelector()">
-                <span id="selected-coll-label">📦 My Collection</span>
-                <span>▾</span>
+              <div class="coll-dropdown-wrap" id="coll-dropdown-wrap">
+                <div class="conv-coll-btn" id="coll-selector" onclick="toggleCollSelector()">
+                  <span id="selected-coll-label">📦 My Collection</span>
+                  <svg id="coll-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.18s"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+                <div class="coll-dropdown" id="coll-dropdown" style="display:none">
+                  <div class="coll-dd-label">Collections</div>
+                  <div id="coll-dd-list"></div>
+                  <div class="coll-dd-sep"></div>
+                  <div class="coll-dd-item coll-dd-new" onclick="openNewCollection()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                    New collection
+                  </div>
+                </div>
               </div>
             </div>
             <button class="conv-send" onclick="handleConvSubmit()" title="Add item">
@@ -1634,6 +1718,11 @@ function hide(id){const el=document.getElementById(id);if(el)el.classList.add('h
 function show(id){const el=document.getElementById(id);if(el)el.classList.remove('hidden')}
 
 // ── INIT ──
+document.addEventListener('click', function(e){
+  const wrap = document.getElementById('coll-dropdown-wrap');
+  if(wrap && !wrap.contains(e.target)) closeCollDropdown();
+});
+
 window.addEventListener('DOMContentLoaded',()=>{
   loadTheme();
   // Dismiss loading screen regardless of WebGL status
@@ -1749,22 +1838,48 @@ function updateSendBtn(){
 }
 let pendingPreset = null;
 
+let _collDropdownOpen = false;
 function toggleCollSelector(){
-  renderCollList();
-  show('coll-picker');
+  _collDropdownOpen = !_collDropdownOpen;
+  const dd = document.getElementById('coll-dropdown');
+  const chevron = document.getElementById('coll-chevron');
+  if(_collDropdownOpen){
+    renderCollDropdown();
+    dd.style.display = 'block';
+    if(chevron) chevron.style.transform = 'rotate(180deg)';
+  } else {
+    dd.style.display = 'none';
+    if(chevron) chevron.style.transform = '';
+  }
 }
-
-function renderCollList(){
-  const list = document.getElementById('coll-list');
+function closeCollDropdown(){
+  _collDropdownOpen = false;
+  const dd = document.getElementById('coll-dropdown');
+  const chevron = document.getElementById('coll-chevron');
+  if(dd) dd.style.display = 'none';
+  if(chevron) chevron.style.transform = '';
+}
+function renderCollDropdown(){
+  const list = document.getElementById('coll-dd-list');
+  if(!list) return;
   list.innerHTML = '';
+  const checkSvg = `<svg class="coll-dd-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`;
   collections.forEach(function(c){
     const isActive = activeCollection && activeCollection.id === c.id;
+    const count = getCollItemCount(c.id);
     const div = document.createElement('div');
-    div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 16px;background:'+(isActive?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.05)')+';border:0.5px solid rgba(255,255,255,'+(isActive?'0.3':'0.1')+');border-radius:14px;cursor:pointer;transition:all 0.15s';
-    div.innerHTML = '<span style="font-size:22px">'+c.icon+'</span><div style="flex:1"><div style="font-size:14px;font-weight:500;color:#fff">'+c.name+'</div><div style="font-size:12px;color:rgba(255,255,255,0.45)">'+getCollItemCount(c.id)+' items</div></div>'+(isActive?'<span style="color:rgba(255,255,255,0.6);font-size:12px">Active</span>':'');
+    div.className = 'coll-dd-item' + (isActive ? ' coll-dd-active' : '');
+    div.innerHTML = `<span class="coll-dd-item-icon">${c.icon}</span><div class="coll-dd-item-meta"><div class="coll-dd-item-name">${c.name}</div><div class="coll-dd-item-count">${count} item${count!==1?'s':''}</div></div>${isActive?checkSvg:''}`;
     div.onclick = function(){ selectCollection(c); };
     list.appendChild(div);
   });
+}
+/* legacy renderCollList kept for compat */
+function renderCollList(){ renderCollDropdown(); }
+function openNewCollection(){
+  closeCollDropdown();
+  show('coll-picker');
+  show('create-coll-step1');
 }
 
 function getCollItemCount(collId){
@@ -1774,7 +1889,7 @@ function getCollItemCount(collId){
 
 function selectCollection(c){
   activeCollection = c;
-  hide('coll-picker');
+  closeCollDropdown();
   updateCollSelector();
   updateAddScreenForCollection();
 }
