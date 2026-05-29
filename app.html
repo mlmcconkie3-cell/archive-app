@@ -747,6 +747,7 @@ body.light-mode .settings-btn:hover {
 /* + Add popup button */
 .add-btn-wrap { position: relative; display: inline-flex; }
 #app .add-plus-btn { padding: 0 12px; font-size: 16px; }
+#app .conv-mic-btn { padding: 0 10px; }
 .add-popup {
   position: absolute;
   bottom: calc(100% + 8px);
@@ -1754,6 +1755,11 @@ body, body * {
                 </div>
               </div>
 
+              <!-- Voice: standalone mic icon button -->
+              <button class="conv-coll-btn conv-mic-btn" id="voice-btn" onclick="startVoice()" title="Voice input">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
+              </button>
+
               <!-- My Collection dropdown: collection switcher + add modes -->
               <div class="coll-dropdown-wrap" id="coll-dropdown-wrap">
                 <div class="conv-coll-btn" id="coll-selector" onclick="toggleCollSelector()">
@@ -1765,10 +1771,6 @@ body, body * {
                   <div class="coll-dd-item" onclick="document.getElementById('fi-lib').click();closeCollDropdown()">
                     <span class="coll-dd-item-icon">🖼</span>
                     <span class="coll-dd-item-name">Library</span>
-                  </div>
-                  <div class="coll-dd-item" id="voice-btn" onclick="closeCollDropdown();startVoice()">
-                    <span class="coll-dd-item-icon">🎤</span>
-                    <span class="coll-dd-item-name">Voice</span>
                   </div>
                   <div class="coll-dd-item" onclick="closeCollDropdown();showManualAdd()">
                     <span class="coll-dd-item-icon">✏️</span>
