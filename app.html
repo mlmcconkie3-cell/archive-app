@@ -1230,6 +1230,220 @@ body.light-mode .pg-btn.pg-active {
 }
 body.light-mode .pg-ellipsis { color: rgba(0,0,0,0.25); }
 
+/* ── Collection dashboard layout ── */
+#view-collection { display: flex; flex-direction: column; height: 100%; }
+.cs-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 14px 0 10px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cs-search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 12px;
+  flex-wrap: wrap;
+}
+.cs-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 180px;
+  max-width: 340px;
+  padding: 8px 12px;
+  background: var(--modal-bg);
+  border: 0.5px solid var(--modal-border);
+  border-radius: 10px;
+  color: var(--modal-text-dim);
+}
+.cs-search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font: 13px/1 'Geist', ui-sans-serif, sans-serif;
+  color: var(--modal-text);
+  min-width: 0;
+}
+.cs-search-input::placeholder { color: var(--modal-text-dim); }
+.cs-search-hint {
+  font-size: 10px;
+  color: var(--modal-text-dim);
+  background: var(--modal-hover);
+  padding: 2px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cs-main {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+  align-items: flex-start;
+}
+.cs-grid-area { flex: 1; min-width: 0; }
+
+/* Add Item button + dropdown */
+.add-item-wrap { position: relative; }
+.add-item-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  background: var(--modal-text);
+  color: var(--modal-bg);
+  border: none;
+  border-radius: 10px;
+  font: 600 13px/1 'Geist', ui-sans-serif, sans-serif;
+  cursor: pointer;
+  transition: opacity 0.14s;
+  white-space: nowrap;
+}
+.add-item-btn:hover { opacity: 0.85; }
+.add-item-dd {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 55;
+  min-width: 170px;
+  background: var(--modal-bg);
+  border: 0.5px solid var(--modal-border);
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+  animation: ddIn 0.13s ease;
+  transform-origin: top right;
+}
+.add-item-dd-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font: 400 13px/1 'Geist', ui-sans-serif, sans-serif;
+  color: var(--modal-text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+}
+.add-item-dd-row:hover { background: var(--modal-hover); }
+
+/* Nav avatar */
+.cn-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font: 700 11px/30px 'Geist', sans-serif;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Analytics sidebar */
+.cs-sidebar {
+  width: 264px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cs-card {
+  background: var(--modal-bg);
+  border: 0.5px solid var(--modal-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.cs-card-hd {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+.cs-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--modal-text-dim);
+}
+.cs-spark {
+  width: 70px;
+  height: 30px;
+  flex-shrink: 0;
+}
+.cs-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--modal-text);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-family: 'Geist', sans-serif;
+}
+.cs-value-sm {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--modal-text);
+  line-height: 1.3;
+  margin-bottom: 3px;
+}
+.cs-sub {
+  font-size: 11px;
+  color: var(--modal-text-dim);
+  margin-top: 3px;
+}
+.cs-gain-sub {
+  font-size: 11.5px;
+  color: var(--modal-text-dim);
+  margin-top: 4px;
+}
+.cs-gain-pos {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64c882;
+  margin-top: 2px;
+}
+/* Category breakdown rows */
+.cs-cat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.cs-cat-name { font-size: 12px; color: var(--modal-text); }
+.cs-cat-val { font-size: 12px; color: var(--modal-text-dim); }
+.cs-cat-track {
+  height: 3px;
+  background: var(--modal-sep);
+  border-radius: 2px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.cs-cat-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 900px) {
+  .cs-main { flex-direction: column; }
+  .cs-sidebar { width: 100%; }
+}
+@media (max-width: 640px) {
+  .cs-search-row { flex-direction: column; align-items: stretch; }
+  .cs-search-wrap { max-width: 100%; }
+}
+
 /* ── Collection grid slots ── */
 .sx-card-add {
   border: 1.5px dashed rgba(255,255,255,0.14) !important;
@@ -1495,6 +1709,10 @@ body.light-mode .score-label,
 body.light-mode .profile-item-sub,
 body.light-mode .profile-email,
 body.light-mode .profile-section-title { color: rgba(0,0,0,0.45) !important; }
+body.light-mode .add-item-btn { background: #1a1208 !important; color: #fff !important; }
+body.light-mode .add-item-dd-row { color: rgba(0,0,0,0.75) !important; }
+body.light-mode .cn-avatar { background: #1a1208 !important; }
+body.light-mode .cs-search-hint { background: rgba(0,0,0,0.06) !important; color: rgba(0,0,0,0.40) !important; }
 body, body * {
   transition: background-color 0.3s ease, color 0.2s ease, border-color 0.2s ease;
 }
@@ -1915,7 +2133,8 @@ body, body * {
 
     <!-- COLLECTION VIEW -->
     <div class="view" id="view-collection">
-      <!-- Top navbar -->
+
+      <!-- Top nav: Home/Collections/Insights/Plan + count + avatar -->
       <nav class="coll-nav" id="coll-nav">
         <div class="cn-left">
           <button class="cn-item" onclick="showView('add')">Home</button>
@@ -1939,34 +2158,128 @@ body, body * {
         </div>
         <div class="cn-right">
           <span class="cn-badge" id="cn-item-count">0 items</span>
+          <div class="cn-avatar" id="cn-avatar">?</div>
         </div>
       </nav>
-      <div class="coll-layout">
-        <div class="coll-left">
-          <div class="coll-header-row">
-            <div>
-              <div class="coll-title">MY COLLECTION</div>
-              <span class="item-count-badge" id="ic">0 items</span>
-            </div>
-            <div class="filter-row">
-              <button class="filter-btn active" onclick="filterColl('all',this)">All</button>
-              <button class="filter-btn" onclick="filterColl('Sneaker',this)">Sneakers</button>
-              <button class="filter-btn" onclick="filterColl('Trading Card',this)">Cards</button>
-              <button class="filter-btn" onclick="filterColl('Watch',this)">Watches</button>
-              <button class="filter-btn" onclick="filterColl('Other',this)">Other</button>
-            </div>
+
+      <!-- Collection header: title + Add Item button -->
+      <div class="cs-header">
+        <div>
+          <div class="coll-title">MY COLLECTION</div>
+          <span class="item-count-badge" id="ic">0 items</span>
+        </div>
+        <div class="add-item-wrap" id="add-item-wrap">
+          <button class="add-item-btn" onclick="toggleAddItemMenu()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Add Item
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="add-item-dd" id="add-item-dd" style="display:none">
+            <button class="add-item-dd-row" onclick="document.getElementById('fi').click();closeAddItemMenu()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="3.5"/><path d="M9 3h6l1.5 2H19a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2.5L9 3z"/></svg>
+              Camera
+            </button>
+            <button class="add-item-dd-row" onclick="document.getElementById('fi-lib').click();closeAddItemMenu()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg>
+              Library
+            </button>
+            <button class="add-item-dd-row" onclick="closeAddItemMenu();startVoice()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
+              Voice
+            </button>
+            <button class="add-item-dd-row" onclick="closeAddItemMenu();showManualAdd()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              Manual
+            </button>
           </div>
+        </div>
+      </div>
+
+      <!-- Search + category filters -->
+      <div class="cs-search-row">
+        <div class="cs-search-wrap">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input id="coll-search" class="cs-search-input" type="text" placeholder="Search your collection..." oninput="handleCollSearch(this.value)" autocomplete="off">
+          <span class="cs-search-hint">⌘K</span>
+        </div>
+        <div class="filter-row">
+          <button class="filter-btn active" onclick="filterColl('all',this)">All</button>
+          <button class="filter-btn" onclick="filterColl('Sneaker',this)">Sneakers</button>
+          <button class="filter-btn" onclick="filterColl('Trading Card',this)">Cards</button>
+          <button class="filter-btn" onclick="filterColl('Watch',this)">Watches</button>
+          <button class="filter-btn" onclick="filterColl('Other',this)">Other</button>
+        </div>
+      </div>
+
+      <!-- Main: grid area + analytics sidebar -->
+      <div class="cs-main">
+
+        <!-- Grid area -->
+        <div class="cs-grid-area">
           <div class="stockx-grid" id="cgrid"></div>
           <div id="coll-pagination" class="pagination"></div>
         </div>
-        <div class="coll-right">
-          <div class="an-card"><div class="an-label">Total value</div><div class="an-value" id="an-total">$0</div><div class="an-sub" id="an-gain-sub">—</div></div>
-          <div class="an-card"><div class="an-label">Items tracked</div><div class="an-value" id="an-count">0</div><div class="an-sub" id="an-cat-sub">—</div></div>
-          <div class="an-card"><div class="an-label">Best performer</div><div class="an-value-sm" id="an-best-name">Add purchase prices</div><div class="an-gain" id="an-best-gain">—</div></div>
-          <div class="an-card"><div class="an-label">Biggest value item</div><div class="an-value-sm" id="an-top-item">—</div><div class="an-gain" id="an-top-val">—</div></div>
-          <div class="an-card"><div class="an-label">Category breakdown</div><div class="cat-breakdown" id="an-cats"></div></div>
+
+        <!-- Analytics sidebar -->
+        <aside class="cs-sidebar">
+
+          <!-- 1. Total Value -->
+          <div class="cs-card">
+            <div class="cs-card-hd">
+              <div class="cs-label">TOTAL VALUE</div>
+              <svg class="cs-spark" viewBox="0 0 200 60" preserveAspectRatio="none">
+                <defs><linearGradient id="sgGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(100,200,130,0.22)"/>
+                  <stop offset="100%" stop-color="rgba(100,200,130,0)"/>
+                </linearGradient></defs>
+                <path id="graph-fill" d="" fill="url(#sgGrad)"/>
+                <path id="graph-line" d="" fill="none" stroke="#64c882" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="cs-value" id="an-total">$0</div>
+            <div class="cs-gain-sub" id="an-gain-sub">—</div>
+          </div>
+
+          <!-- 2. Items Tracked -->
+          <div class="cs-card">
+            <div class="cs-card-hd">
+              <div class="cs-label">ITEMS TRACKED</div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.25"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg>
+            </div>
+            <div class="cs-value" id="an-count">0</div>
+            <div class="cs-sub" id="an-cat-sub">—</div>
+          </div>
+
+          <!-- 3. Best Performer -->
+          <div class="cs-card">
+            <div class="cs-card-hd">
+              <div class="cs-label">BEST PERFORMER</div>
+              <span style="font-size:16px;opacity:0.35">👑</span>
+            </div>
+            <div class="cs-value-sm" id="an-best-name">Add purchase prices</div>
+            <div class="cs-gain-pos" id="an-best-gain">—</div>
+          </div>
+
+          <!-- 4. Biggest Value Item -->
+          <div class="cs-card">
+            <div class="cs-card-hd">
+              <div class="cs-label">BIGGEST VALUE ITEM</div>
+              <span style="font-size:16px;opacity:0.35">💎</span>
+            </div>
+            <div class="cs-value-sm" id="an-top-item">—</div>
+            <div class="cs-gain-pos" id="an-top-val">—</div>
+          </div>
+
+          <!-- 5. Category Breakdown -->
+          <div class="cs-card">
+            <div class="cs-label" style="margin-bottom:10px">CATEGORY BREAKDOWN</div>
+            <div id="an-cats"></div>
+          </div>
+
+          <!-- 6. Report button -->
           <button class="gen-report-btn" onclick="generateReport()">Generate insurance report →</button>
-        </div>
+
+        </aside>
       </div>
     </div>
 
@@ -2335,6 +2648,8 @@ document.addEventListener('click', function(e){
   if(addWrap && !addWrap.contains(e.target)) closeAddPopup();
   const cnWrap = document.getElementById('cn-collections-wrap');
   if(cnWrap && !cnWrap.contains(e.target)) closeCollNav();
+  const aiWrap = document.getElementById('add-item-wrap');
+  if(aiWrap && !aiWrap.contains(e.target)) closeAddItemMenu();
 });
 
 function toggleAddPopup(){
@@ -2349,9 +2664,12 @@ function closeAddPopup(){
 }
 document.addEventListener('keydown', function(e){
   if(e.key === 'Escape'){
-    closeCollDropdown();
-    closeAddPopup();
-    closeNewCollWizard();
+    closeCollDropdown(); closeAddPopup(); closeAddItemMenu(); closeNewCollWizard();
+  }
+  if((e.metaKey||e.ctrlKey) && e.key==='k'){
+    e.preventDefault();
+    const s = document.getElementById('coll-search');
+    if(s){ showView('collection'); setTimeout(()=>s.focus(),50); }
   }
 });
 
@@ -2992,6 +3310,27 @@ function loadTheme(){
   }
 }
 
+// ── ADD ITEM MENU ──
+let _addItemMenuOpen = false;
+function toggleAddItemMenu(){
+  _addItemMenuOpen = !_addItemMenuOpen;
+  const dd = document.getElementById('add-item-dd');
+  if(dd) dd.style.display = _addItemMenuOpen ? 'block' : 'none';
+}
+function closeAddItemMenu(){
+  _addItemMenuOpen = false;
+  const dd = document.getElementById('add-item-dd');
+  if(dd) dd.style.display = 'none';
+}
+
+// ── COLLECTION SEARCH ──
+let collSearch = '';
+function handleCollSearch(val){
+  collSearch = val.toLowerCase().trim();
+  collPage = 1;
+  renderColl();
+}
+
 // ── COLLECTION NAVBAR ──
 let _collNavOpen = false;
 function toggleCollNav(){
@@ -3031,6 +3370,8 @@ function renderCollNav(){
 function updateCollNav(){
   const badge = document.getElementById('cn-item-count');
   if(badge) badge.textContent = coll.length + ' item' + (coll.length!==1?'s':'');
+  const av = document.getElementById('cn-avatar');
+  if(av && user) av.textContent = (user.name||user.email||'?')[0].toUpperCase();
 }
 
 // ── VIEWS ──
@@ -3092,7 +3433,9 @@ function filterColl(cat,btn){
 }
 function renderColl(){
   updateCollNav();
-  const filtered=currentFilter==='all'?[...coll].reverse():[...coll].filter(i=>i.cat===currentFilter).reverse();
+  let filtered=(currentFilter==='all'?[...coll]:[...coll].filter(i=>i.cat===currentFilter))
+    .filter(i=>!collSearch||i.name.toLowerCase().includes(collSearch)||i.cat.toLowerCase().includes(collSearch))
+    .reverse();
   document.getElementById('ic').textContent=coll.length+' item'+(coll.length!==1?'s':'');
   const g=document.getElementById('cgrid');
   g.innerHTML='';
@@ -3140,30 +3483,40 @@ function renderColl(){
   renderPagination(needsPagination ? filtered.length : 0);
   updateAnalytics();
 }
+const CAT_COLORS={'Sneaker':'#7b68ee','Trading Card':'#f0b94a','Sports Card':'#4a9eff','Watch':'#e98a64','Luxury':'#e98a64','Tech':'#4a9eff','Clothing':'#7b68ee','Home':'#64c882','Entertainment':'#c879d9','Sport':'#ff6b6b','Coin':'#f0b94a','Other':'#888'};
 function updateAnalytics(){
   const total=coll.reduce((s,i)=>s+Number(i.val||0),0);
   const paid=coll.reduce((s,i)=>s+Number(i.paid||0),0);
   const gain=total-paid;
   const cats=[...new Set(coll.map(i=>i.cat))];
-  document.getElementById('an-total').textContent='$'+total.toLocaleString();
-  document.getElementById('an-count').textContent=coll.length;
-  document.getElementById('an-cat-sub').textContent=cats.length+' categor'+(cats.length!==1?'ies':'y');
-  document.getElementById('an-gain-sub').textContent=paid>0?(gain>=0?'+$':'-$')+Math.abs(gain).toLocaleString()+' total gain':'Add purchase prices';
+  const setEl=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  setEl('an-total','$'+total.toLocaleString());
+  setEl('an-count',coll.length);
+  setEl('an-cat-sub',cats.length+' categor'+(cats.length!==1?'ies':'y'));
+  if(paid>0){
+    const pct=Math.round((gain/paid)*100);
+    const gainEl=document.getElementById('an-gain-sub');
+    if(gainEl){gainEl.textContent=(pct>=0?'+':'')+pct+'% vs purchase price';gainEl.style.color=pct>=0?'#64c882':'#f87171';}
+  } else {
+    setEl('an-gain-sub','Add purchase prices to track gains');
+  }
   const withGain=coll.filter(i=>i.paid>0);
   if(withGain.length){
     const best=[...withGain].sort((a,b)=>((b.val-b.paid)/b.paid)-((a.val-a.paid)/a.paid))[0];
     const g=Math.round(((best.val-best.paid)/best.paid)*100);
-    document.getElementById('an-best-name').textContent=best.name;
-    document.getElementById('an-best-gain').textContent=(g>=0?'+':'')+g+'%';
+    setEl('an-best-name',best.name);
+    setEl('an-best-gain',(g>=0?'+':'')+g+'%');
   }
   const topVal=coll.length?[...coll].sort((a,b)=>b.val-a.val)[0]:null;
-  if(topVal){document.getElementById('an-top-item').textContent=topVal.name;document.getElementById('an-top-val').textContent='$'+Number(topVal.val).toLocaleString();}
+  if(topVal){setEl('an-top-item',topVal.name);setEl('an-top-val','$'+Number(topVal.val).toLocaleString());}
   const catMap={};coll.forEach(i=>{catMap[i.cat]=(catMap[i.cat]||0)+Number(i.val||0);});
-  const catEl=document.getElementById('an-cats');catEl.innerHTML='';
+  const catEl=document.getElementById('an-cats');if(!catEl)return;catEl.innerHTML='';
   Object.entries(catMap).sort((a,b)=>b[1]-a[1]).forEach(([cat,val])=>{
-    const pct=total>0?Math.round((val/total)*100):0;
-    catEl.innerHTML+=`<div class="cat-row"><span class="cat-name">${cat}</span><span class="cat-val">$${Number(val).toLocaleString()}</span></div><div class="cat-bar-wrap"><div class="cat-bar" style="width:${pct}%"></div></div>`;
+    const pct=total>0?Math.min(100,Math.round((val/total)*100)):0;
+    const color=CAT_COLORS[cat]||'#888';
+    catEl.innerHTML+=`<div class="cs-cat-row"><span class="cs-cat-name">${cat}</span><span class="cs-cat-val">$${Number(val).toLocaleString()}</span></div><div class="cs-cat-track"><div class="cs-cat-bar" style="width:${pct}%;background:${color}"></div></div>`;
   });
+  updateMiniGraph(total);
 }
 
 // ── ITEM DETAIL ──
