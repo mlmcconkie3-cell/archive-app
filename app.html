@@ -731,10 +731,13 @@ input[type="file"]{display:none}
   border-radius: 50%;
   background: rgba(255,255,255,0.25);
 }
+/* Camera quick button — same pill as collection btn */
+#app .conv-camera-btn { gap: 6px; }
 /* hide old add-screen elements that may still be referenced */
 #app .add-stats-row,
 #app .add-hero,
-#app .quick-add { display: none !important; }
+#app .quick-add,
+#app .action-pills { display: none !important; }
 
 /* ── Collection Dropdown (OriginUI DropdownMenu style) ── */
 .coll-dropdown-wrap {
@@ -1218,13 +1221,34 @@ body, body * {
           <textarea class="conv-input" id="conv-input" placeholder="Describe what you just acquired..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleConvSubmit()}" oninput="autoResize(this)"></textarea>
           <div class="conv-actions">
             <div class="conv-left">
+              <!-- Camera: standalone quick button -->
+              <button class="conv-coll-btn conv-camera-btn" onclick="document.getElementById('fi').click()" title="Take photo">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.5"/><path d="M9 3h6l1.5 2H19a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2.5L9 3z"/></svg>
+                Camera
+              </button>
+
+              <!-- My Collection dropdown: collection switcher + add modes -->
               <div class="coll-dropdown-wrap" id="coll-dropdown-wrap">
                 <div class="conv-coll-btn" id="coll-selector" onclick="toggleCollSelector()">
                   <span id="selected-coll-label">📦 My Collection</span>
                   <svg id="coll-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.18s"><path d="M6 9l6 6 6-6"/></svg>
                 </div>
                 <div class="coll-dropdown" id="coll-dropdown" style="display:none">
-                  <div class="coll-dd-label">Collections</div>
+                  <div class="coll-dd-label">Add to Collection</div>
+                  <div class="coll-dd-item" onclick="document.getElementById('fi-lib').click();closeCollDropdown()">
+                    <span class="coll-dd-item-icon">🖼</span>
+                    <span class="coll-dd-item-name">Library</span>
+                  </div>
+                  <div class="coll-dd-item" id="voice-btn" onclick="closeCollDropdown();startVoice()">
+                    <span class="coll-dd-item-icon">🎤</span>
+                    <span class="coll-dd-item-name">Voice</span>
+                  </div>
+                  <div class="coll-dd-item" onclick="closeCollDropdown();showManualAdd()">
+                    <span class="coll-dd-item-icon">✏️</span>
+                    <span class="coll-dd-item-name">Manual Entry</span>
+                  </div>
+                  <div class="coll-dd-sep"></div>
+                  <div class="coll-dd-label">Collection</div>
                   <div id="coll-dd-list"></div>
                   <div class="coll-dd-sep"></div>
                   <div class="coll-dd-item coll-dd-new" onclick="openNewCollection()">
@@ -1238,26 +1262,6 @@ body, body * {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
           </div>
-        </div>
-
-        <!-- Action pills -->
-        <div class="action-pills">
-          <button class="action-pill" onclick="document.getElementById('fi').click()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.7"/><path d="M9 3h6l1.5 2H19a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2.5L9 3z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
-            Camera
-          </button>
-          <button class="action-pill" onclick="document.getElementById('fi-lib').click()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M3 16l5-5 4 4 3-3 6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Library
-          </button>
-          <button class="action-pill" id="voice-btn" onclick="startVoice()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-            Voice
-          </button>
-          <button class="action-pill" onclick="showManualAdd()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            Manual
-          </button>
         </div>
 
         <!-- Value strip -->
