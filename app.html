@@ -736,6 +736,65 @@ input[type="file"]{display:none}
 #app .add-hero,
 #app .quick-add { display: none !important; }
 
+/* ── Pagination (OriginUI style) ── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  margin: 24px 0 8px;
+  flex-wrap: wrap;
+}
+.pagination:empty { display: none; }
+.pg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 6px;
+  border-radius: 8px;
+  border: 0.5px solid transparent;
+  background: transparent;
+  color: rgba(255,255,255,0.45);
+  font: 500 13px/1 'Geist', ui-sans-serif, sans-serif;
+  cursor: pointer;
+  transition: all 0.14s;
+  user-select: none;
+}
+.pg-btn:hover:not(:disabled):not(.pg-ellipsis) {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.10);
+}
+.pg-btn.pg-active {
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.18);
+  color: #fff;
+}
+.pg-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+.pg-ellipsis {
+  cursor: default;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 0.05em;
+}
+.pg-arrow svg { display: block; }
+body.light-mode .pg-btn { color: rgba(0,0,0,0.40); }
+body.light-mode .pg-btn:hover:not(:disabled):not(.pg-ellipsis) {
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.80);
+  border-color: rgba(0,0,0,0.10);
+}
+body.light-mode .pg-btn.pg-active {
+  background: rgba(0,0,0,0.08);
+  border-color: rgba(0,0,0,0.16);
+  color: #1a1208;
+}
+body.light-mode .pg-ellipsis { color: rgba(0,0,0,0.25); }
+
 /* ── Light mode ── */
 body.light-mode {
   background: #f0ece4;
@@ -1205,6 +1264,7 @@ body, body * {
             </div>
           </div>
           <div class="stockx-grid" id="cgrid"></div>
+          <div id="coll-pagination" class="pagination"></div>
         </div>
         <div class="coll-right">
           <div class="an-card"><div class="an-label">Total value</div><div class="an-value" id="an-total">$0</div><div class="an-sub" id="an-gain-sub">—</div></div>
@@ -2163,26 +2223,66 @@ function showView(v){
 
 // ── COLLECTION ──
 let currentFilter='all';
+let collPage=1;
+const COLL_PAGE_SIZE=12;
+
+function usePagination(total,current,siblings=1){
+  function range(s,e){return Array.from({length:e-s+1},(_,i)=>s+i);}
+  if(total<=siblings*2+5) return range(1,total);
+  const left=Math.max(current-siblings,1);
+  const right=Math.min(current+siblings,total);
+  const showL=left>2, showR=right<total-1;
+  if(!showL&&showR) return [...range(1,3+siblings*2),'…',total];
+  if(showL&&!showR) return [1,'…',...range(total-(3+siblings*2-1),total)];
+  return [1,'…',...range(left,right),'…',total];
+}
+
+function renderPagination(totalItems){
+  const el=document.getElementById('coll-pagination');
+  if(!el) return;
+  const totalPages=Math.ceil(totalItems/COLL_PAGE_SIZE);
+  if(totalPages<=1){el.innerHTML='';return;}
+  const pages=usePagination(totalPages,collPage);
+  const chevL=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>`;
+  const chevR=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
+  let html=`<button class="pg-btn pg-arrow" ${collPage===1?'disabled':''} onclick="goCollPage(${collPage-1})" aria-label="Previous">${chevL}</button>`;
+  pages.forEach(p=>{
+    if(p==='…') html+=`<button class="pg-btn pg-ellipsis" disabled>…</button>`;
+    else html+=`<button class="pg-btn${p===collPage?' pg-active':''}" onclick="goCollPage(${p})">${p}</button>`;
+  });
+  html+=`<button class="pg-btn pg-arrow" ${collPage===totalPages?'disabled':''} onclick="goCollPage(${collPage+1})" aria-label="Next">${chevR}</button>`;
+  el.innerHTML=html;
+}
+
+function goCollPage(p){
+  collPage=p;
+  renderColl();
+  document.getElementById('cgrid')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 function filterColl(cat,btn){
   currentFilter=cat;
+  collPage=1;
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
   renderColl();
 }
 function renderColl(){
-  const filtered=currentFilter==='all'?coll:coll.filter(i=>i.cat===currentFilter);
+  const filtered=currentFilter==='all'?[...coll].reverse():[...coll].filter(i=>i.cat===currentFilter).reverse();
   document.getElementById('ic').textContent=coll.length+' item'+(coll.length!==1?'s':'');
   const g=document.getElementById('cgrid');
   if(!coll.length){
     g.innerHTML=`<div class="empty-coll"><h3>Nothing here yet</h3><p>Tap Add and photograph something you own — AI will identify and value it instantly.</p><button class="empty-add-btn" onclick="showView('add')">Add your first item</button></div>`;
-    updateAnalytics();return;
+    renderPagination(0);updateAnalytics();return;
   }
   if(!filtered.length){
     g.innerHTML='<div class="empty-coll" style="grid-column:1/-1"><p>No items in this category yet.</p></div>';
-    updateAnalytics();return;
+    renderPagination(0);updateAnalytics();return;
   }
+  const start=(collPage-1)*COLL_PAGE_SIZE;
+  const page=filtered.slice(start,start+COLL_PAGE_SIZE);
   g.innerHTML='';
-  [...filtered].reverse().forEach((item,i)=>{
+  page.forEach(item=>{
     const realIdx=coll.indexOf(item);
     const gain=item.paid>0?Math.round(((item.val-item.paid)/item.paid)*100):null;
     const gainClass=gain===null?'neu':gain>0?'pos':'neg';
@@ -2193,6 +2293,7 @@ function renderColl(){
     c.onclick=()=>openDetail(realIdx);
     g.appendChild(c);
   });
+  renderPagination(filtered.length);
   updateAnalytics();
 }
 function updateAnalytics(){
