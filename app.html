@@ -601,7 +601,7 @@ input[type="file"]{display:none}
 /* Side rail (replaces bottom nav) */
 #app .tabbar {
   position: fixed;
-  top: 50%;
+  top: 30%;
   left: 0;
   transform: translateY(-50%);
   width: 52px;
@@ -731,8 +731,46 @@ input[type="file"]{display:none}
   border-radius: 50%;
   background: rgba(255,255,255,0.25);
 }
-/* Camera quick button — same pill as collection btn */
-#app .conv-camera-btn { gap: 6px; }
+/* + Add popup button */
+.add-btn-wrap { position: relative; display: inline-flex; }
+#app .add-plus-btn { padding: 0 12px; font-size: 16px; }
+.add-popup {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 60;
+  background: #111;
+  border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.55);
+  min-width: 140px;
+  animation: ddIn 0.14s ease;
+  transform-origin: bottom left;
+}
+.add-popup-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.75);
+  font: 500 13px/1 'Geist', ui-sans-serif, sans-serif;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s, color 0.12s;
+}
+.add-popup-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+body.light-mode .add-popup {
+  background: #fff;
+  border-color: rgba(0,0,0,0.10);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+body.light-mode .add-popup-item { color: rgba(0,0,0,0.70); }
+body.light-mode .add-popup-item:hover { background: rgba(0,0,0,0.05); color: #1a1208; }
 /* hide old add-screen elements that may still be referenced */
 #app .add-stats-row,
 #app .add-hero,
@@ -1510,11 +1548,22 @@ body, body * {
           <textarea class="conv-input" id="conv-input" placeholder="Describe what you just acquired..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleConvSubmit()}" oninput="autoResize(this)"></textarea>
           <div class="conv-actions">
             <div class="conv-left">
-              <!-- Camera: standalone quick button -->
-              <button class="conv-coll-btn conv-camera-btn" onclick="document.getElementById('fi').click()" title="Take photo">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.5"/><path d="M9 3h6l1.5 2H19a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2.5L9 3z"/></svg>
-                Camera
-              </button>
+              <!-- + button with Camera / Upload popup -->
+              <div class="add-btn-wrap" id="add-btn-wrap">
+                <button class="conv-coll-btn add-plus-btn" onclick="toggleAddPopup()" id="add-plus-btn" title="Add photo">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+                <div class="add-popup" id="add-popup" style="display:none">
+                  <button class="add-popup-item" onclick="document.getElementById('fi').click();closeAddPopup()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.5"/><path d="M9 3h6l1.5 2H19a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2.5L9 3z"/></svg>
+                    Camera
+                  </button>
+                  <button class="add-popup-item" onclick="document.getElementById('fi-lib').click();closeAddPopup()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg>
+                    Upload
+                  </button>
+                </div>
+              </div>
 
               <!-- My Collection dropdown: collection switcher + add modes -->
               <div class="coll-dropdown-wrap" id="coll-dropdown-wrap">
@@ -2015,10 +2064,24 @@ function show(id){const el=document.getElementById(id);if(el)el.classList.remove
 document.addEventListener('click', function(e){
   const wrap = document.getElementById('coll-dropdown-wrap');
   if(wrap && !wrap.contains(e.target)) closeCollDropdown();
+  const addWrap = document.getElementById('add-btn-wrap');
+  if(addWrap && !addWrap.contains(e.target)) closeAddPopup();
 });
+
+function toggleAddPopup(){
+  const popup = document.getElementById('add-popup');
+  if(!popup) return;
+  const open = popup.style.display !== 'none';
+  if(open){ closeAddPopup(); } else { popup.style.display = 'block'; }
+}
+function closeAddPopup(){
+  const popup = document.getElementById('add-popup');
+  if(popup) popup.style.display = 'none';
+}
 document.addEventListener('keydown', function(e){
   if(e.key === 'Escape'){
     closeCollDropdown();
+    closeAddPopup();
     closeNewCollWizard();
   }
 });
