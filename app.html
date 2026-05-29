@@ -1179,6 +1179,149 @@ body.light-mode .pg-btn.pg-active {
 }
 body.light-mode .pg-ellipsis { color: rgba(0,0,0,0.25); }
 
+/* ── Collection grid slots ── */
+.sx-card-add {
+  border: 1.5px dashed rgba(255,255,255,0.14) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  min-height: 200px;
+}
+.sx-card-add:hover {
+  border-color: rgba(255,255,255,0.30) !important;
+  background: rgba(255,255,255,0.03) !important;
+}
+.sx-add-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.28);
+  transition: color 0.15s;
+}
+.sx-card-add:hover .sx-add-inner { color: rgba(255,255,255,0.55); }
+.sx-card-ghost {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  pointer-events: none;
+  min-height: 200px;
+}
+body.light-mode .sx-card-add {
+  border-color: rgba(0,0,0,0.12) !important;
+}
+body.light-mode .sx-card-add:hover {
+  border-color: rgba(0,0,0,0.28) !important;
+  background: rgba(0,0,0,0.03) !important;
+}
+body.light-mode .sx-add-inner { color: rgba(0,0,0,0.25); }
+body.light-mode .sx-card-add:hover .sx-add-inner { color: rgba(0,0,0,0.50); }
+
+/* ── Collection page navbar ── */
+.coll-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px 10px 0;
+  margin-bottom: 4px;
+  border-bottom: 0.5px solid var(--modal-sep);
+  gap: 8px;
+}
+.cn-left {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+.cn-right { flex-shrink: 0; }
+.cn-badge {
+  font-size: 11px;
+  color: var(--modal-text-dim);
+  font-family: 'Geist', sans-serif;
+  letter-spacing: 0.02em;
+}
+.cn-item {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font: 500 13px/1 'Geist', ui-sans-serif, sans-serif;
+  color: var(--modal-text-dim);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+.cn-item:hover { background: var(--modal-hover); color: var(--modal-text); }
+.cn-item.cn-muted { opacity: 0.45; }
+.cn-has-dropdown { position: relative; }
+.cn-item-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font: 500 13px/1 'Geist', ui-sans-serif, sans-serif;
+  color: var(--modal-text-dim);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.cn-item-btn:hover { background: var(--modal-hover); color: var(--modal-text); }
+.cn-chevron { transition: transform 0.18s; flex-shrink: 0; }
+.cn-chevron.open { transform: rotate(180deg); }
+.cn-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 55;
+  min-width: 210px;
+  background: var(--modal-bg);
+  border: 0.5px solid var(--modal-border);
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.30);
+  animation: ddIn 0.14s ease;
+  transform-origin: top left;
+}
+.cn-dropdown-label {
+  padding: 6px 10px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--modal-text-dim);
+  user-select: none;
+}
+.cn-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font: 400 13px/1 'Geist', ui-sans-serif, sans-serif;
+  color: var(--modal-text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s, color 0.12s;
+}
+.cn-dropdown-item:hover { background: var(--modal-hover); }
+.cn-dropdown-item.cn-active {
+  background: var(--modal-hover);
+  font-weight: 500;
+}
+.cn-dropdown-item-icon { font-size: 14px; }
+.cn-dropdown-item-meta { flex: 1; }
+.cn-dropdown-item-count { font-size: 11px; color: var(--modal-text-dim); }
+.cn-dropdown-sep { height: 0.5px; background: var(--modal-sep); margin: 4px -4px; }
+.cn-dropdown-new { color: var(--modal-text-dim); font-size: 12px; }
+
 /* ── Light mode ── */
 body.light-mode {
   background: #f0ece4;
@@ -1720,6 +1863,32 @@ body, body * {
 
     <!-- COLLECTION VIEW -->
     <div class="view" id="view-collection">
+      <!-- Top navbar -->
+      <nav class="coll-nav" id="coll-nav">
+        <div class="cn-left">
+          <button class="cn-item" onclick="showView('add')">Home</button>
+          <div class="cn-item cn-has-dropdown" id="cn-collections-wrap">
+            <button class="cn-item-btn" onclick="toggleCollNav()" id="cn-collections-btn">
+              Collections
+              <svg class="cn-chevron" id="cn-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="cn-dropdown" id="cn-collections-dropdown" style="display:none">
+              <div class="cn-dropdown-label">My Collections</div>
+              <div id="cn-collections-list"></div>
+              <div class="cn-dropdown-sep"></div>
+              <button class="cn-dropdown-item cn-dropdown-new" onclick="openNewCollection();closeCollNav()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                New collection
+              </button>
+            </div>
+          </div>
+          <button class="cn-item" onclick="showView('dashboard')">Insights</button>
+          <button class="cn-item cn-muted" onclick="showView('profile')">Plan</button>
+        </div>
+        <div class="cn-right">
+          <span class="cn-badge" id="cn-item-count">0 items</span>
+        </div>
+      </nav>
       <div class="coll-layout">
         <div class="coll-left">
           <div class="coll-header-row">
@@ -2112,6 +2281,8 @@ document.addEventListener('click', function(e){
   if(wrap && !wrap.contains(e.target)) closeCollDropdown();
   const addWrap = document.getElementById('add-btn-wrap');
   if(addWrap && !addWrap.contains(e.target)) closeAddPopup();
+  const cnWrap = document.getElementById('cn-collections-wrap');
+  if(cnWrap && !cnWrap.contains(e.target)) closeCollNav();
 });
 
 function toggleAddPopup(){
@@ -2769,6 +2940,47 @@ function loadTheme(){
   }
 }
 
+// ── COLLECTION NAVBAR ──
+let _collNavOpen = false;
+function toggleCollNav(){
+  _collNavOpen = !_collNavOpen;
+  const dd = document.getElementById('cn-collections-dropdown');
+  const chevron = document.getElementById('cn-chevron');
+  if(_collNavOpen){
+    renderCollNav();
+    dd.style.display = 'block';
+    chevron && chevron.classList.add('open');
+  } else {
+    dd.style.display = 'none';
+    chevron && chevron.classList.remove('open');
+  }
+}
+function closeCollNav(){
+  _collNavOpen = false;
+  const dd = document.getElementById('cn-collections-dropdown');
+  const chevron = document.getElementById('cn-chevron');
+  if(dd) dd.style.display = 'none';
+  chevron && chevron.classList.remove('open');
+}
+function renderCollNav(){
+  const list = document.getElementById('cn-collections-list');
+  if(!list) return;
+  list.innerHTML = '';
+  (collections||[]).forEach(function(c){
+    const isActive = activeCollection && activeCollection.id === c.id;
+    const count = getCollItemCount(c.id);
+    const btn = document.createElement('button');
+    btn.className = 'cn-dropdown-item' + (isActive ? ' cn-active' : '');
+    btn.innerHTML = `<span class="cn-dropdown-item-icon">${c.icon}</span><span class="cn-dropdown-item-meta"><span>${c.name}</span><span class="cn-dropdown-item-count"> · ${count} item${count!==1?'s':''}</span></span>`;
+    btn.onclick = function(){ selectCollection(c); closeCollNav(); renderColl(); };
+    list.appendChild(btn);
+  });
+}
+function updateCollNav(){
+  const badge = document.getElementById('cn-item-count');
+  if(badge) badge.textContent = coll.length + ' item' + (coll.length!==1?'s':'');
+}
+
 // ── VIEWS ──
 function showView(v){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
@@ -2783,7 +2995,7 @@ function showView(v){
 // ── COLLECTION ──
 let currentFilter='all';
 let collPage=1;
-const COLL_PAGE_SIZE=12;
+const COLL_PAGE_SIZE=8;
 
 function usePagination(total,current,siblings=1){
   function range(s,e){return Array.from({length:e-s+1},(_,i)=>s+i);}
@@ -2827,20 +3039,17 @@ function filterColl(cat,btn){
   renderColl();
 }
 function renderColl(){
+  updateCollNav();
   const filtered=currentFilter==='all'?[...coll].reverse():[...coll].filter(i=>i.cat===currentFilter).reverse();
   document.getElementById('ic').textContent=coll.length+' item'+(coll.length!==1?'s':'');
   const g=document.getElementById('cgrid');
-  if(!coll.length){
-    g.innerHTML=`<div class="empty-coll"><h3>Nothing here yet</h3><p>Tap Add and photograph something you own — AI will identify and value it instantly.</p><button class="empty-add-btn" onclick="showView('add')">Add your first item</button></div>`;
-    renderPagination(0);updateAnalytics();return;
-  }
-  if(!filtered.length){
-    g.innerHTML='<div class="empty-coll" style="grid-column:1/-1"><p>No items in this category yet.</p></div>';
-    renderPagination(0);updateAnalytics();return;
-  }
-  const start=(collPage-1)*COLL_PAGE_SIZE;
-  const page=filtered.slice(start,start+COLL_PAGE_SIZE);
   g.innerHTML='';
+
+  const needsPagination = filtered.length > COLL_PAGE_SIZE;
+  const start = (collPage-1)*COLL_PAGE_SIZE;
+  const page = filtered.slice(start, start+COLL_PAGE_SIZE);
+
+  // Render real item cards
   page.forEach(item=>{
     const realIdx=coll.indexOf(item);
     const gain=item.paid>0?Math.round(((item.val-item.paid)/item.paid)*100):null;
@@ -2852,7 +3061,31 @@ function renderColl(){
     c.onclick=()=>openDetail(realIdx);
     g.appendChild(c);
   });
-  renderPagination(filtered.length);
+
+  // Fill remaining slots up to 8
+  const filled = page.length;
+  const slotsLeft = COLL_PAGE_SIZE - filled;
+
+  if(!needsPagination && slotsLeft > 0){
+    // First empty slot = "+" add card (only on last page or when < 8 total)
+    const isLastPage = start + filled >= filtered.length;
+    if(isLastPage){
+      const plus = document.createElement('div');
+      plus.className='sx-card sx-card-add';
+      plus.innerHTML=`<div class="sx-add-inner"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>`;
+      plus.onclick=()=>showView('add');
+      g.appendChild(plus);
+
+      // Remaining slots: invisible spacers
+      for(let i=1;i<slotsLeft;i++){
+        const ghost=document.createElement('div');
+        ghost.className='sx-card sx-card-ghost';
+        g.appendChild(ghost);
+      }
+    }
+  }
+
+  renderPagination(needsPagination ? filtered.length : 0);
   updateAnalytics();
 }
 function updateAnalytics(){
