@@ -739,6 +739,231 @@ input[type="file"]{display:none}
 #app .quick-add,
 #app .action-pills { display: none !important; }
 
+/* ── New Collection Wizard ── */
+.ncw-card {
+  width: 100%;
+  max-width: 500px;
+  background: #111;
+  border: 0.5px solid rgba(255,255,255,0.10);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 28px 80px rgba(0,0,0,0.6);
+  transition: max-width 0.32s cubic-bezier(.4,0,.2,1);
+}
+.ncw-card.expanded { max-width: 820px; }
+.ncw-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 22px 22px 0;
+}
+.ncw-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  color: #f0ece4;
+  font-weight: 400;
+}
+.ncw-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+  margin-top: 3px;
+}
+.ncw-close {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  border: 0.5px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.14s;
+}
+.ncw-close:hover { background: rgba(255,255,255,0.13); color: #fff; }
+.ncw-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 18px 22px 22px;
+}
+.ncw-preset-btn {
+  padding: 14px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid rgba(255,255,255,0.09);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.14s, border-color 0.14s, transform 0.1s;
+}
+.ncw-preset-btn:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.18);
+  transform: translateY(-1px);
+}
+.ncw-preset-btn .pb-icon { font-size: 24px; margin-bottom: 6px; }
+.ncw-preset-btn .pb-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.80); }
+.ncw-preset-btn .pb-sub { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; line-height: 1.3; }
+
+/* Two-panel layout */
+.ncw-panels { display: flex; min-height: 400px; }
+.ncw-left {
+  width: 220px;
+  min-width: 220px;
+  border-right: 0.5px solid rgba(255,255,255,0.07);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.ncw-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.35);
+  font: 500 11.5px/1 'Geist', sans-serif;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 18px;
+  transition: color 0.14s;
+}
+.ncw-back:hover { color: rgba(255,255,255,0.7); }
+.ncw-field-group { display: flex; flex-direction: column; flex: 1; }
+.ncw-field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  margin-bottom: 6px;
+}
+.ncw-name-input {
+  background: none;
+  border: none;
+  outline: none;
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  color: #f0ece4;
+  width: 100%;
+  padding: 0;
+  caret-color: rgba(255,255,255,0.7);
+}
+.ncw-name-input::placeholder { color: rgba(255,255,255,0.18); }
+.ncw-field-input {
+  background: rgba(255,255,255,0.05);
+  border: 0.5px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: 13px/1 'Geist', sans-serif;
+  color: #f0ece4;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.14s;
+}
+.ncw-field-input:focus { border-color: rgba(255,255,255,0.28); }
+.ncw-field-input::placeholder { color: rgba(255,255,255,0.22); }
+.ncw-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.06);
+  border: 0.5px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+}
+.ncw-create-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 11px;
+  background: #f0ece4;
+  border: none;
+  border-radius: 10px;
+  color: #0a0a0a;
+  font: 600 13px/1 'Geist', sans-serif;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: opacity 0.15s;
+}
+.ncw-create-btn:hover { opacity: 0.88; }
+
+/* Right panel */
+.ncw-right { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.ncw-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.25);
+}
+.ncw-search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font: 13px/1 'Geist', sans-serif;
+  color: rgba(255,255,255,0.25);
+  cursor: default;
+}
+.ncw-search-input::placeholder { color: rgba(255,255,255,0.22); }
+.ncw-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px;
+}
+.ncw-preset-icon { font-size: 36px; margin-bottom: 4px; }
+.ncw-empty-title { font-size: 13px; color: rgba(255,255,255,0.35); }
+.ncw-empty-sub { font-size: 11px; color: rgba(255,255,255,0.18); }
+.ncw-price-row {
+  padding: 10px 14px;
+  border-top: 0.5px solid rgba(255,255,255,0.06);
+  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+}
+.ncw-price-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.05);
+  border: 0.5px solid rgba(255,255,255,0.10);
+  border-radius: 7px;
+  font: 500 11.5px/1 'Geist', sans-serif;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.ncw-price-btn:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.75); }
+.ncw-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 10px 12px;
+}
+.ncw-tab {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  font: 500 11.5px/1 'Geist', sans-serif;
+  color: rgba(255,255,255,0.30);
+  cursor: pointer;
+  transition: background 0.14s, color 0.14s;
+}
+.ncw-tab:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.65); }
+.ncw-tab.active { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.85); }
+@media (max-width: 640px) {
+  .ncw-card.expanded { max-width: 100%; }
+  .ncw-panels { flex-direction: column; }
+  .ncw-left { width: 100%; min-width: 0; border-right: none; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+  .ncw-preset-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 /* ── Collection Dropdown (OriginUI DropdownMenu style) ── */
 .coll-dropdown-wrap {
   position: relative;
@@ -1147,34 +1372,92 @@ body, body * {
   </div>
 </div>
 
-<!-- CREATE COLLECTION - STEP 1: Pick preset -->
-<div id="create-coll-step1" class="hidden" style="position:fixed;inset:0;z-index:76;display:flex;align-items:flex-end;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px)">
-  <div style="width:100%;background:#0c2a27;border-radius:24px 24px 0 0;padding:24px 18px 40px;border-top:0.5px solid rgba(255,255,255,0.15);max-height:85vh;overflow-y:auto">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <h3 style="font-family:'DM Serif Display',serif;font-size:20px;color:#fff;font-weight:400">What kind of collection?</h3>
-      <button onclick="hide('create-coll-step1')" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px">×</button>
+<!-- NEW COLLECTION WIZARD (centered modal, 2-step) -->
+<div id="new-coll-wizard" class="hidden" style="position:fixed;inset:0;z-index:88;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,0.72);backdrop-filter:blur(10px)">
+  <div id="ncw-card" class="ncw-card">
+
+    <!-- STEP 1: Preset picker -->
+    <div id="ncw-step1">
+      <div class="ncw-header">
+        <div>
+          <div class="ncw-title">What kind of collection?</div>
+          <div class="ncw-sub">Choose a type to get started</div>
+        </div>
+        <button class="ncw-close" onclick="closeNewCollWizard()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="ncw-preset-grid" class="ncw-preset-grid"></div>
     </div>
-    <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px">Choose a preset to get started</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="preset-grid"></div>
+
+    <!-- STEP 2: Two-panel layout (hidden initially) -->
+    <div id="ncw-step2" class="hidden ncw-panels">
+
+      <!-- Left panel: metadata inputs -->
+      <div class="ncw-left">
+        <button class="ncw-back" onclick="ncwBack()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          Back
+        </button>
+
+        <div class="ncw-field-group" style="flex:1">
+          <div class="ncw-field-label">Collection name</div>
+          <input id="ncw-name" class="ncw-name-input" type="text" placeholder="My collection..."
+            onkeydown="if(event.key==='Enter')confirmNewColl()">
+
+          <div class="ncw-field-label" style="margin-top:20px">Location</div>
+          <input id="ncw-location" class="ncw-field-input" type="text" placeholder="e.g. New York">
+
+          <div class="ncw-field-label" style="margin-top:14px">Type</div>
+          <div id="ncw-type-badge" class="ncw-type-badge"></div>
+        </div>
+
+        <button class="ncw-create-btn" onclick="confirmNewColl()">Create collection →</button>
+      </div>
+
+      <!-- Right panel: preview -->
+      <div class="ncw-right">
+        <!-- Search -->
+        <div class="ncw-search-bar">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input class="ncw-search-input" type="text" placeholder="Search in collection" disabled>
+        </div>
+
+        <!-- Empty state -->
+        <div class="ncw-empty" id="ncw-empty">
+          <div id="ncw-preset-icon" class="ncw-preset-icon"></div>
+          <div class="ncw-empty-title">No items yet</div>
+          <div class="ncw-empty-sub">Items you add will appear here</div>
+        </div>
+
+        <!-- Price edit -->
+        <div class="ncw-price-row">
+          <button class="ncw-price-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Edit prices
+          </button>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="ncw-tabs">
+          <button class="ncw-tab active" onclick="ncwTab(this)">All</button>
+          <button class="ncw-tab" onclick="ncwTab(this)">Recent</button>
+          <button class="ncw-tab" onclick="ncwTab(this)">Value ↑</button>
+          <button class="ncw-tab" onclick="ncwTab(this)">Category</button>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
-<!-- CREATE COLLECTION - STEP 2: Name it -->
-<div id="create-coll-step2" class="hidden" style="position:fixed;inset:0;z-index:77;display:flex;align-items:flex-end;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px)">
-  <div style="width:100%;background:#0c2a27;border-radius:24px 24px 0 0;padding:24px 18px 40px;border-top:0.5px solid rgba(255,255,255,0.15)">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <h3 style="font-family:'DM Serif Display',serif;font-size:20px;color:#fff;font-weight:400" id="step2-title">Name your collection</h3>
-      <button onclick="hide('create-coll-step2')" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px">×</button>
-    </div>
-    <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px" id="step2-sub">Give it a memorable name</p>
-    <input id="new-coll-name" type="text" placeholder="e.g. Japan 2026, My Sneakers..."
-      style="width:100%;padding:14px 16px;background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.2);border-radius:14px;color:#fff;font-size:16px;font-family:'Geist',sans-serif;margin-bottom:14px;outline:none"
-      onkeydown="if(event.key==='Enter')confirmCreateCollection()">
-    <button onclick="confirmCreateCollection()" style="width:100%;padding:13px;background:#fff;border:none;border-radius:14px;color:#0c2a27;font-size:15px;font-weight:600;cursor:pointer;font-family:'Geist',sans-serif">
-      Create collection
-    </button>
-  </div>
-</div>
+<!-- Legacy IDs kept for JS compat (hidden, unused) -->
+<div id="create-coll-step1" class="hidden"></div>
+<div id="create-coll-step2" class="hidden"></div>
+<div id="new-coll-name" style="display:none"></div>
+<div id="step2-title" style="display:none"></div>
+<div id="step2-sub" style="display:none"></div>
+<div id="preset-grid" style="display:none"></div>
 
 <!-- MAIN APP -->
 <div id="app" class="app">
@@ -1726,6 +2009,12 @@ document.addEventListener('click', function(e){
   const wrap = document.getElementById('coll-dropdown-wrap');
   if(wrap && !wrap.contains(e.target)) closeCollDropdown();
 });
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    closeCollDropdown();
+    closeNewCollWizard();
+  }
+});
 
 window.addEventListener('DOMContentLoaded',()=>{
   loadTheme();
@@ -1882,8 +2171,7 @@ function renderCollDropdown(){
 function renderCollList(){ renderCollDropdown(); }
 function openNewCollection(){
   closeCollDropdown();
-  show('coll-picker');
-  show('create-coll-step1');
+  openNewCollWizard();
 }
 
 function getCollItemCount(collId){
@@ -1912,47 +2200,83 @@ function updateAddScreenForCollection(){
   updateStats();
 }
 
-function showCreateCollection(){
-  hide('coll-picker');
-  const grid = document.getElementById('preset-grid');
+function openNewCollWizard(){
+  // Populate preset grid
+  const grid = document.getElementById('ncw-preset-grid');
   grid.innerHTML = '';
   PRESETS.forEach(function(p){
-    const div = document.createElement('div');
-    div.style.cssText = 'padding:16px 14px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.15);border-radius:14px;cursor:pointer;text-align:center;transition:all 0.15s';
-    div.innerHTML = '<div style="font-size:28px;margin-bottom:6px">'+p.icon+'</div><div style="font-size:13px;font-weight:500;color:#fff">'+p.name+'</div><div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:3px">'+p.sub+'</div>';
-    div.onclick = function(){
-      pendingPreset = p;
-      document.getElementById('step2-title').textContent = p.icon + ' ' + p.name + ' collection';
-      document.getElementById('step2-sub').textContent = p.sub;
-      document.getElementById('new-coll-name').value = '';
-      document.getElementById('new-coll-name').placeholder = p.id === 'travel' ? 'e.g. Japan 2026, Europe Summer...' : 'e.g. My ' + p.name + '...';
-      hide('create-coll-step1');
-      show('create-coll-step2');
-      setTimeout(function(){ document.getElementById('new-coll-name').focus(); }, 100);
-    };
-    grid.appendChild(div);
+    const btn = document.createElement('button');
+    btn.className = 'ncw-preset-btn';
+    btn.innerHTML = '<div class="pb-icon">'+p.icon+'</div><div class="pb-name">'+p.name+'</div><div class="pb-sub">'+p.sub+'</div>';
+    btn.onclick = function(){ ncwSelectPreset(p); };
+    grid.appendChild(btn);
   });
-  show('create-coll-step1');
+  // Reset to step 1
+  show('ncw-step1');
+  hide('ncw-step2');
+  document.getElementById('ncw-card').classList.remove('expanded');
+  pendingPreset = null;
+  show('new-coll-wizard');
 }
 
-function confirmCreateCollection(){
-  const name = document.getElementById('new-coll-name').value.trim();
-  if(!name || !pendingPreset) return;
+function closeNewCollWizard(){
+  hide('new-coll-wizard');
+  pendingPreset = null;
+}
+
+function ncwSelectPreset(p){
+  pendingPreset = p;
+  // Populate step 2
+  const nameInput = document.getElementById('ncw-name');
+  nameInput.value = '';
+  nameInput.placeholder = p.id === 'travel' ? 'e.g. Japan 2026...' : 'e.g. My ' + p.name + '...';
+  document.getElementById('ncw-type-badge').innerHTML = '<span>'+p.icon+'</span> '+p.name;
+  document.getElementById('ncw-preset-icon').textContent = p.icon;
+  // Transition
+  hide('ncw-step1');
+  show('ncw-step2');
+  document.getElementById('ncw-card').classList.add('expanded');
+  setTimeout(function(){ nameInput.focus(); }, 80);
+}
+
+function ncwBack(){
+  show('ncw-step1');
+  hide('ncw-step2');
+  document.getElementById('ncw-card').classList.remove('expanded');
+  pendingPreset = null;
+}
+
+function ncwTab(btn){
+  document.querySelectorAll('.ncw-tab').forEach(function(t){ t.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+function confirmNewColl(){
+  const name = document.getElementById('ncw-name').value.trim();
+  if(!name || !pendingPreset) {
+    document.getElementById('ncw-name').focus();
+    return;
+  }
   const newColl = {
     id: 'coll_' + Date.now(),
     name: name,
     icon: pendingPreset.icon,
     preset: pendingPreset.id,
     color: pendingPreset.color,
+    location: document.getElementById('ncw-location').value.trim(),
     createdAt: new Date().toISOString()
   };
   collections.push(newColl);
   saveCollections();
   activeCollection = newColl;
-  hide('create-coll-step2');
+  closeNewCollWizard();
   updateCollSelector();
   updateAddScreenForCollection();
 }
+
+/* compat shims */
+function showCreateCollection(){ openNewCollWizard(); }
+function confirmCreateCollection(){ confirmNewColl(); }
 
 let pendingDescription='';
 let pendingPhoto=null;
