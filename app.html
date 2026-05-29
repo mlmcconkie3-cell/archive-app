@@ -780,29 +780,35 @@ input[type="file"]{display:none}
   transition: background 0.14s;
 }
 .ncw-close:hover { background: rgba(255,255,255,0.13); color: #fff; }
-.ncw-preset-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  padding: 18px 22px 22px;
+.ncw-preset-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 6px 8px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.10) transparent;
 }
+.ncw-preset-list::-webkit-scrollbar { width: 4px; }
+.ncw-preset-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 2px; }
 .ncw-preset-btn {
-  padding: 14px 10px;
-  background: rgba(255,255,255,0.04);
-  border: 0.5px solid rgba(255,255,255,0.09);
-  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 9px;
   cursor: pointer;
-  text-align: center;
-  transition: background 0.14s, border-color 0.14s, transform 0.1s;
+  text-align: left;
+  transition: background 0.12s;
 }
-.ncw-preset-btn:hover {
-  background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.18);
-  transform: translateY(-1px);
-}
-.ncw-preset-btn .pb-icon { font-size: 24px; margin-bottom: 6px; }
-.ncw-preset-btn .pb-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.80); }
-.ncw-preset-btn .pb-sub { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; line-height: 1.3; }
+.ncw-preset-btn:hover { background: rgba(255,255,255,0.07); }
+.ncw-preset-btn .pb-icon { font-size: 20px; flex-shrink: 0; width: 28px; text-align: center; }
+.ncw-preset-btn .pb-text { display: flex; flex-direction: column; gap: 1px; }
+.ncw-preset-btn .pb-name { font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.85); }
+.ncw-preset-btn .pb-sub { font-size: 11.5px; color: rgba(255,255,255,0.35); }
 
 /* Two-panel layout */
 .ncw-panels { display: flex; min-height: 400px; }
@@ -961,7 +967,7 @@ input[type="file"]{display:none}
   .ncw-card.expanded { max-width: 100%; }
   .ncw-panels { flex-direction: column; }
   .ncw-left { width: 100%; min-width: 0; border-right: none; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
-  .ncw-preset-grid { grid-template-columns: repeat(2, 1fr); }
+  .ncw-preset-list { max-height: 260px; }
 }
 
 /* ── Collection Dropdown (OriginUI DropdownMenu style) ── */
@@ -1387,7 +1393,7 @@ body, body * {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </div>
-      <div id="ncw-preset-grid" class="ncw-preset-grid"></div>
+      <div id="ncw-preset-grid" class="ncw-preset-list"></div>
     </div>
 
     <!-- STEP 2: Two-panel layout (hidden initially) -->
@@ -1956,6 +1962,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 // ── STATE ──
 const PRESETS = [
+  {id:'other', icon:'📦', name:'Other', color:'#888888', sub:'General purpose collection'},
   {id:'travel', icon:'✈️', name:'Travel', color:'#5b9bc8', sub:'Document trips & purchases'},
   {id:'clothing', icon:'👕', name:'Clothing', color:'#7b68ee', sub:'Sneakers, shirts, outerwear'},
   {id:'tech', icon:'💻', name:'Tech', color:'#4a9eff', sub:'Devices, accessories, gadgets'},
@@ -2207,7 +2214,7 @@ function openNewCollWizard(){
   PRESETS.forEach(function(p){
     const btn = document.createElement('button');
     btn.className = 'ncw-preset-btn';
-    btn.innerHTML = '<div class="pb-icon">'+p.icon+'</div><div class="pb-name">'+p.name+'</div><div class="pb-sub">'+p.sub+'</div>';
+    btn.innerHTML = '<span class="pb-icon">'+p.icon+'</span><span class="pb-text"><span class="pb-name">'+p.name+'</span><span class="pb-sub">'+p.sub+'</span></span>';
     btn.onclick = function(){ ncwSelectPreset(p); };
     grid.appendChild(btn);
   });
