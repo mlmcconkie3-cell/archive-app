@@ -216,7 +216,9 @@ img{display:block;max-width:100%}
   padding:32px;
   overflow:hidden;
   position:relative;
+  transition:border-color 0.2s;
 }
+.side-card:hover{border-color:rgba(255,255,255,0.16)}
 .side-card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .side-icon{font-size:18px}
 .side-title{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.01em}
@@ -309,9 +311,17 @@ img{display:block;max-width:100%}
   background:#1a1a1a;
   border:1px solid rgba(255,255,255,0.12);
   display:flex;align-items:center;justify-content:center;
-  margin:0 auto 16px;
+  margin:0 auto 14px;
+  transition:border-color 0.15s;
+}
+.step-icon-wrap:hover{border-color:rgba(255,255,255,0.28)}
+.step-icon-wrap.highlight{
+  background:#1c1c2e;
+  border:1px solid rgba(100,120,255,0.4);
+  box-shadow:0 0 20px rgba(80,100,255,0.15);
 }
 .step-icon-wrap svg{width:22px;height:22px;stroke:rgba(255,255,255,0.7);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.step-icon-wrap.highlight svg{stroke:rgba(180,190,255,0.9)}
 .step-text{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.55;padding:0 12px}
 
 /* ── Use Cases ── */
@@ -322,17 +332,22 @@ img{display:block;max-width:100%}
   border:1px solid rgba(255,255,255,0.08);
   border-radius:18px;
   overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  transition:border-color 0.18s,transform 0.18s;
 }
+.use-card:hover{border-color:rgba(255,255,255,0.18);transform:translateY(-2px)}
 .use-img{
-  width:100%;height:160px;
+  width:100%;height:180px;
   background:#1a1a1a;
   overflow:hidden;
-  position:relative;
+  flex-shrink:0;
 }
-.use-img img{width:100%;height:100%;object-fit:cover}
-.use-body{padding:20px}
+.use-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease}
+.use-card:hover .use-img img{transform:scale(1.04)}
+.use-body{padding:20px;display:flex;flex-direction:column;flex:1}
 .use-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px}
-.use-desc{font-size:12.5px;color:rgba(255,255,255,0.45);line-height:1.65;margin-bottom:18px}
+.use-desc{font-size:12.5px;color:rgba(255,255,255,0.45);line-height:1.65;margin-bottom:18px;flex:1}
 .btn-learn{
   display:inline-flex;align-items:center;gap:6px;
   padding:8px 16px;
@@ -342,9 +357,10 @@ img{display:block;max-width:100%}
   font-size:12px;font-weight:500;
   color:rgba(255,255,255,0.65);
   cursor:pointer;
-  transition:border-color 0.15s,color 0.15s;
+  transition:border-color 0.15s,color 0.15s,background 0.15s;
+  align-self:flex-start;
 }
-.btn-learn:hover{border-color:rgba(255,255,255,0.35);color:#fff}
+.btn-learn:hover{border-color:rgba(255,255,255,0.35);color:#fff;background:rgba(255,255,255,0.05)}
 
 /* ── Stats Banner ── */
 .stats-banner{
@@ -363,10 +379,19 @@ img{display:block;max-width:100%}
 .stats-headline{font-size:18px;font-weight:700;color:#fff;line-height:1.35;letter-spacing:-0.01em}
 .stats-right{display:flex;gap:40px;flex-wrap:wrap}
 .stat-item{text-align:center}
-.stat-val{font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.02em}
-.stat-icon{display:flex;justify-content:center;margin-bottom:6px}
-.stat-icon svg{width:22px;height:22px;stroke:rgba(255,255,255,0.4);fill:none;stroke-width:1.6;stroke-linecap:round}
-.stat-label{font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px}
+.stat-val{font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.02em;margin-bottom:3px}
+.stat-icon{
+  display:flex;justify-content:center;align-items:center;margin-bottom:10px;
+}
+.stat-icon-ring{
+  width:40px;height:40px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.18);
+  background:rgba(255,255,255,0.04);
+  display:flex;align-items:center;justify-content:center;
+}
+.stat-icon-ring svg{width:18px;height:18px;stroke:rgba(255,255,255,0.6);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.stat-label{font-size:11px;color:rgba(255,255,255,0.4);margin-top:1px}
 
 /* ── Final CTA ── */
 .cta-section{
@@ -478,18 +503,17 @@ footer{
   <div class="hero-visual">
     <!-- Transaction panel -->
     <div class="hero-card tx-card">
-      <div class="tx-label">Chase Sapphire — 1234</div>
-      <div class="tx-chip">
-        <span class="tx-chip-name">CHASE SAPPHIRE</span>
-        <span class="tx-chip-num">·· 1234</span>
+      <div class="tx-label">CHASE SAPPHIRE — 1234
+        <svg style="float:right;opacity:0.4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
       </div>
-      <div class="tx-row">
-        <div class="tx-thumb">
-          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=80&q=80" alt="Sneaker">
-        </div>
+      <!-- Product image -->
+      <div style="width:100%;height:120px;background:#1a1a1a;border-radius:10px;overflow:hidden;margin-bottom:12px">
+        <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=300&q=80" alt="Jordan 4" style="width:100%;height:100%;object-fit:cover">
+      </div>
+      <div class="tx-row" style="border:none;padding:0">
         <div class="tx-info">
-          <div class="tx-name">StockX</div>
-          <div class="tx-meta">May 24, 2024</div>
+          <div class="tx-name">Jordan 4 Retro Military Black</div>
+          <div class="tx-meta">Nike · Sneakers</div>
         </div>
         <div class="tx-amt">-$220.00</div>
       </div>
@@ -698,8 +722,8 @@ footer{
       <div class="step-arrow">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.6" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </div>
-      <div class="step-icon-wrap" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.18)">
-        <svg viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.9)"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <div class="step-icon-wrap highlight">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       </div>
       <p class="step-text">AI identifies the item and categorizes it</p>
     </div>
@@ -732,7 +756,7 @@ footer{
   <div class="use-grid">
     <div class="use-card">
       <div class="use-img">
-        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80" alt="Sneaker Collector">
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&h=360&q=80" alt="Sneaker Collector">
       </div>
       <div class="use-body">
         <div class="use-title">The Sneaker Collector</div>
@@ -773,28 +797,36 @@ footer{
     <div class="stats-right">
       <div class="stat-item">
         <div class="stat-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10zm0-18C7.59 4 4 7.59 4 12s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8zm.5 4H11v6l5.25 3.15.75-1.23-4.5-2.67V8z" stroke="none" fill="rgba(255,255,255,0.4)"/></svg>
+          <div class="stat-icon-ring">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
         </div>
         <div class="stat-val">100%</div>
         <div class="stat-label">Automated</div>
       </div>
       <div class="stat-item">
         <div class="stat-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+          <div class="stat-icon-ring">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+          </div>
         </div>
         <div class="stat-val">Real-time</div>
         <div class="stat-label">Updates</div>
       </div>
       <div class="stat-item">
         <div class="stat-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <div class="stat-icon-ring">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
         </div>
         <div class="stat-val">AI-Powered</div>
         <div class="stat-label">Intelligence</div>
       </div>
       <div class="stat-item">
         <div class="stat-icon">
-          <svg viewBox="0 0 24 24"><polyline points="22 4 12 14.01 9 11.01"/><path d="M22 4L12 14.01l-3-3L1 19"/></svg>
+          <div class="stat-icon-ring">
+            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
         </div>
         <div class="stat-val">Complete</div>
         <div class="stat-label">Visibility</div>
