@@ -829,6 +829,160 @@ footer{
 }
 
 /* ════════════════════════════════════════
+   HERO REDESIGN — top bar + dual panels
+   ════════════════════════════════════════ */
+
+/* Top bar: logo placeholder + CTA */
+.hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 36px 48px 28px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.hero-logo-ph {
+  width: 148px;
+  height: 46px;
+  border: 1.5px dashed rgba(255,255,255,0.18);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  user-select: none;
+}
+.hero-start-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  background: #fff;
+  color: #0a0a0a;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 9px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.hero-start-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+/* Two-panel grid below the top bar */
+.hero-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 0 48px 64px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Each panel is a horizontal split: anim | text */
+.hero-panel {
+  display: flex;
+  align-items: stretch;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.09);
+  min-height: 360px;
+  position: relative;
+}
+.hero-panel-vault { background: linear-gradient(145deg,#111,#12100a); }
+.hero-panel-auto  { background: linear-gradient(145deg,#0c1016,#111); flex-direction: row-reverse; }
+
+/* Animation half */
+.hpp-anim {
+  flex: 0 0 52%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 12px 16px;
+  position: relative;
+  min-width: 0;
+}
+.hero-panel-vault .hpp-anim { border-right: 1px solid rgba(255,255,255,0.06); }
+.hero-panel-auto  .hpp-anim { border-left:  1px solid rgba(255,255,255,0.06); }
+
+/* Text half */
+.hpp-text {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 22px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+.hpp-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 14px;
+}
+.hpp-label-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.hpp-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.hpp-icon  { font-size: 17px; line-height: 1; }
+.hpp-title { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+.hpp-tagline {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.55;
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+.hpp-features { display: flex; flex-direction: column; gap: 9px; }
+.hpp-feat {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.6);
+  font-weight: 400;
+}
+.hpp-feat-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  flex-shrink: 0;
+}
+.hero-panel-vault .hpp-feat-dot { background: rgba(245,158,11,0.55); }
+.hero-panel-auto  .hpp-feat-dot { background: rgba(59,130,246,0.55);  }
+
+/* Responsive */
+@media(max-width:900px) {
+  .hero-top   { padding: 28px 24px 20px; }
+  .hero-panels { grid-template-columns: 1fr; padding: 0 24px 48px; }
+  .hero-panel  { min-height: 300px; }
+  .hpp-anim    { flex: 0 0 48%; }
+  .hero-panel-auto { flex-direction: row; }
+  .hero-panel-auto .hpp-anim { border-left: none; border-right: 1px solid rgba(255,255,255,0.06); }
+}
+@media(max-width:560px) {
+  .hero-panel  { flex-direction: column; }
+  .hero-panel-auto { flex-direction: column; }
+  .hpp-anim { flex: none; border-right: none !important; border-left: none !important;
+              border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0; }
+  .vp-stage { height: 160px; }
+}
+
+/* ════════════════════════════════════════
    ELITE POLISH
    ════════════════════════════════════════ */
 
@@ -964,38 +1118,30 @@ body::after{
   <a href="/app.html" class="nav-cta">Join Waitlist</a>
 </nav>
 
-<!-- Hero: animated dual panels -->
-<section class="ha-section" id="haSection">
-  <!-- Left: text -->
-  <div class="ha-text">
-    <p class="hero-eyebrow">Your personal acquisition OS</p>
-    <h1 class="hero-h1">Everything<br>you buy.<br>Automatically<br><span class="dim">archived.</span></h1>
-    <p class="hero-sub">Link your cards, snap a photo, or forward a receipt — Archive catalogs it all instantly.</p>
-    <div class="hero-btns">
-      <a href="/app.html" class="btn-white">Join the Waitlist <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      <a href="#how" class="btn-outline">See How It Works <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M10 8l4 4-4 4"/></svg></a>
-    </div>
-  </div>
+<!-- Hero: top bar + dual panels -->
 
-  <!-- Right: two animation panels -->
-  <div class="ha-right">
+<!-- Top bar: logo placeholder + CTA -->
+<div class="hero-top">
+  <div class="hero-logo-ph">Logo Here</div>
+  <a href="/app.html" class="hero-start-btn">
+    Get Started
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </a>
+</div>
 
-    <!-- ── VAULT PANEL ── -->
-    <div class="ha-panel ha-panel-vault" id="vaultPanel">
-      <div class="hap-label"><span class="hap-dot" style="background:#f59e0b"></span>VAULT</div>
+<!-- Dual feature panels -->
+<div class="hero-panels" id="haSection">
+
+  <!-- ── VAULT PANEL ── -->
+  <div class="hero-panel hero-panel-vault ha-panel" id="vaultPanel">
+
+    <!-- Left half: animation -->
+    <div class="hpp-anim">
       <div class="hap-glow hap-glow-gold"></div>
       <div class="vp-stage" id="vaultStage">
-        <!-- Orbit items — JS positions them -->
-        <div class="vp-item" id="vi0">
-          <img src="/assets/travis-scott-jordan.png" alt="Travis Scott Fragment Jordan 1">
-        </div>
-        <div class="vp-item" id="vi1">
-          <img src="/assets/charizard.png" alt="Charizard Card">
-        </div>
-        <div class="vp-item" id="vi2">
-          <img src="/assets/airpods-max.png" alt="AirPods Max">
-        </div>
-        <!-- Card reveal (hidden initially) -->
+        <div class="vp-item" id="vi0"><img src="/assets/travis-scott-jordan.png" alt="Travis Scott Fragment Jordan 1"></div>
+        <div class="vp-item" id="vi1"><img src="/assets/charizard.png" alt="Charizard Card"></div>
+        <div class="vp-item" id="vi2"><img src="/assets/airpods-max.png" alt="AirPods Max"></div>
         <div class="vpc-wrap" id="vpcWrap">
           <div class="vpc-img" id="vpcImg"></div>
           <div class="vpc-body">
@@ -1009,7 +1155,6 @@ body::after{
           <div class="vpc-glow-confirm" id="vpcGlow"></div>
         </div>
       </div>
-      <!-- Progress dots -->
       <div class="vp-dots" id="vaultDots">
         <span class="vpd vpd-active" data-i="0"></span>
         <span class="vpd" data-i="1"></span>
@@ -1017,205 +1162,65 @@ body::after{
       </div>
     </div>
 
-    <!-- ── CONNECTOR ── -->
-    <div class="ha-conn" id="haConn">
-      <svg viewBox="0 0 2 100" preserveAspectRatio="none" class="conn-svg">
-        <line x1="1" y1="0" x2="1" y2="100" stroke="url(#cg)" stroke-width="1" stroke-dasharray="3 3"/>
-        <defs>
-          <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="rgba(245,158,11,0.6)"/>
-            <stop offset="100%" stop-color="rgba(59,130,246,0.6)"/>
-          </linearGradient>
-        </defs>
-      </svg>
-      <div class="conn-particle" id="connParticle"></div>
+    <!-- Right half: text + features -->
+    <div class="hpp-text">
+      <div class="hpp-label"><span class="hpp-label-dot" style="background:#f59e0b"></span>VAULT</div>
+      <div class="hpp-heading">
+        <span class="hpp-icon">📦</span>
+        <span class="hpp-title">Vault</span>
+      </div>
+      <p class="hpp-tagline">Your collection. Your assets. Your value.</p>
+      <div class="hpp-features">
+        <div class="hpp-feat"><span class="hpp-feat-dot"></span>AI Identification</div>
+        <div class="hpp-feat"><span class="hpp-feat-dot"></span>Real-time Market Value</div>
+        <div class="hpp-feat"><span class="hpp-feat-dot"></span>Insurance Reports</div>
+        <div class="hpp-feat"><span class="hpp-feat-dot"></span>Resale Tracking &amp; Insights</div>
+      </div>
     </div>
 
-    <!-- ── ARCHIVEAUTO PANEL ── -->
-    <div class="ha-panel ha-panel-auto" id="autoPanel">
-      <div class="hap-label"><span class="hap-dot" style="background:#3b82f6"></span>ARCHIVEAUTO</div>
+  </div>
+
+  <!-- ── ARCHIVEAUTO PANEL ── -->
+  <div class="hero-panel hero-panel-auto ha-panel" id="autoPanel">
+
+    <!-- Left half: text + features (auto panel is row-reversed so this renders on left) -->
+    <div class="hpp-text">
+      <div class="hpp-label"><span class="hpp-label-dot" style="background:#3b82f6"></span>ARCHIVEAUTO</div>
+      <div class="hpp-heading">
+        <span class="hpp-icon">⚡</span>
+        <span class="hpp-title">ArchiveAuto</span>
+      </div>
+      <p class="hpp-tagline">Your spending. Automatically captured.</p>
+      <div class="hpp-features">
+        <div class="hpp-feat"><span class="hpp-feat-dot"></span>Auto Card Linking</div>
+        <div class="hpp-feat"><span class="hpp-feat-dot"></span>Digital Receipts</div>
+        <div class="hpp-feat"><span class="hpp-feat-dot"></span>Smart Categorization</div>
+        <div class="hpp-feat"><span class="hpp-feat-dot"></span>Spending Insights</div>
+      </div>
+    </div>
+
+    <!-- Right half: animation -->
+    <div class="hpp-anim">
       <div class="hap-glow hap-glow-blue"></div>
-      <!-- Chase card -->
       <div class="cc-card" id="chaseCard">
         <div class="cc-inner">
-          <div class="cc-chip">
-            <div class="cc-chip-h"></div>
-            <div class="cc-chip-v"></div>
-          </div>
+          <div class="cc-chip"><div class="cc-chip-h"></div><div class="cc-chip-v"></div></div>
           <div class="cc-brand">CHASE SAPPHIRE</div>
           <div class="cc-num">•••• •••• •••• 1234</div>
         </div>
         <div class="cc-ok" id="ccOk">Chase Sapphire Connected ✓</div>
       </div>
-      <!-- Transaction tiles list -->
       <div class="ap-tiles" id="apTiles"></div>
     </div>
 
   </div>
 
-  <!-- Mobile fallback (shown < 768px, hides the panels above) -->
-  <div class="ha-mobile-fallback">
-    <div class="hmf-card">
-      <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.4);margin-bottom:10px">VAULT</div>
-      <img src="https://images.unsplash.com/photo-1556906781-9a412961d28d?auto=format&fit=crop&w=300&q=80" style="width:100%;border-radius:10px;margin-bottom:10px" alt="">
-      <div style="font-size:13px;font-weight:600">Travis Scott Jordan 1</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">Sneakers · Market Value</div>
-      <div style="font-size:18px;font-weight:800;color:#f59e0b;margin-top:6px">$850</div>
-    </div>
-    <div class="hmf-card" style="background:linear-gradient(145deg,#0d1118,#111)">
-      <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.4);margin-bottom:10px">ARCHIVEAUTO</div>
-      <div class="cc-card" style="margin-bottom:10px">
-        <div class="cc-inner"><div class="cc-brand" style="font-size:9px">CHASE SAPPHIRE</div><div class="cc-num" style="font-size:9px">•••• 1234</div></div>
-      </div>
-      <div style="font-size:11px;color:#4ade80;font-weight:600">Chase Sapphire Connected ✓</div>
-    </div>
-  </div>
-</section>
+</div>
 
-<div class="divider"></div>
-
-<!-- Two Sides -->
-<section id="vault" class="two-sides">
-  <p class="section-label" style="margin-bottom:28px">TWO SIDES. ONE COMPLETE PICTURE.</p>
-  <div class="two-cards">
-
-    <!-- Vault card -->
-    <div class="side-card" id="about">
-      <div class="side-card-header">
-        <span class="side-icon">📦</span>
-        <span class="side-title">Vault</span>
-      </div>
-      <p class="side-tagline">Your collection. Your assets. Your value.</p>
-      <p class="side-desc">AI identifies, values, and organizes everything you own so you always know what it's worth.</p>
-      <div class="feature-list">
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
-          </div>
-          AI Identification
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><path d="M3 3h18M3 9h18M3 15h10"/><circle cx="17" cy="17" r="4"/><path d="M17 15v2l1 1"/></svg>
-          </div>
-          Real-time Market Value
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          </div>
-          Insurance Reports
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          </div>
-          Resale Tracking &amp; Insights
-        </div>
-      </div>
-      <div class="vault-grid">
-        <div class="vault-thumb"><img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=120&q=80" alt="Sneaker"></div>
-        <div class="vault-thumb"><img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=120&q=80" alt="Watch"></div>
-        <div class="vault-thumb"><img src="https://images.unsplash.com/photo-1607622678872-db5d1b41d3d5?auto=format&fit=crop&w=120&q=80" alt="Cards"></div>
-        <div class="vault-thumb"><img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=120&q=80" alt="Bag"></div>
-      </div>
-      <div class="vault-total">
-        <div>
-          <div class="vault-total-label">Total Collection Value</div>
-          <div class="vault-total-val">$24,350</div>
-        </div>
-        <div class="vault-total-change">+12.4%</div>
-      </div>
-    </div>
-
-    <!-- ArchiveAuto card -->
-    <div class="side-card" id="auto" style="background:#131313">
-      <div class="side-card-header">
-        <span class="side-icon">⚡</span>
-        <span class="side-title">ARCHIVEAuto</span>
-      </div>
-      <p class="side-tagline">Your spending. Automatically captured.</p>
-      <p class="side-desc">Link your cards and receipts. We track every purchase and show you exactly where your money goes.</p>
-      <div class="feature-list">
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-          </div>
-          Auto Card Linking
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          </div>
-          Digital Receipts
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h8M4 18h12"/></svg>
-          </div>
-          Smart Categorization
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          </div>
-          Spending Insights
-        </div>
-      </div>
-      <div class="tx-list-wrap">
-        <div class="tx-list-header">Transactions</div>
-        <div class="tx-list-item">
-          <div class="merchant-badge" style="background:#00b020;color:#fff">SX</div>
-          <div style="flex:1">
-            <div class="tx-list-name">StockX</div>
-            <div class="tx-list-date">May 24, 2024</div>
-          </div>
-          <div class="tx-list-amt">-$220.00</div>
-        </div>
-        <div class="tx-list-item">
-          <div class="merchant-badge" style="background:#ff9900;color:#000">a</div>
-          <div style="flex:1">
-            <div class="tx-list-name">Amazon</div>
-            <div class="tx-list-date">May 24, 2024</div>
-          </div>
-          <div class="tx-list-amt">-$89.99</div>
-        </div>
-        <div class="tx-list-item">
-          <div class="merchant-badge" style="background:#111;color:#fff;border:1px solid rgba(255,255,255,0.15)">NK</div>
-          <div style="flex:1">
-            <div class="tx-list-name">Nike</div>
-            <div class="tx-list-date">May 23, 2024</div>
-          </div>
-          <div class="tx-list-amt">-$129.99</div>
-        </div>
-        <div class="tx-list-item">
-          <div class="merchant-badge" style="background:#702082;color:#fff">TB</div>
-          <div style="flex:1">
-            <div class="tx-list-name">Taco Bell</div>
-            <div class="tx-list-date">May 23, 2024</div>
-          </div>
-          <div class="tx-list-amt">-$12.45</div>
-        </div>
-        <div class="tx-list-item">
-          <div class="merchant-badge" style="background:#276ef1;color:#fff">Ub</div>
-          <div style="flex:1">
-            <div class="tx-list-name">Uber</div>
-            <div class="tx-list-date">May 23, 2024</div>
-          </div>
-          <div class="tx-list-amt">-$18.35</div>
-        </div>
-        <div class="tx-list-total">
-          <div>
-            <div class="tx-list-total-label">This Month</div>
-            <div class="tx-list-total-val">$2,345.67</div>
-          </div>
-          <div class="tx-list-total-change">-8.2%</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
+<!-- Hidden connector keeps JS connParticle ref alive -->
+<div style="display:none" id="haConn">
+  <div class="conn-particle" id="connParticle"></div>
+</div>
 <div class="divider"></div>
 
 <!-- Pricing Engine Section -->
