@@ -1745,6 +1745,60 @@ body, body * {
 /* Verified price highlight on card */
 .sx-verified-row { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
 .sx-price-verified { font-size: 15px; font-weight: 700; color: #4ecf80; }
+
+/* ── Sources checked table ───────────────────────────────────────── */
+.src-table { display: flex; flex-direction: column; gap: 1px; }
+.src-row {
+  display: grid;
+  grid-template-columns: 22px 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 0;
+  border-bottom: 0.5px solid rgba(26,18,10,0.08);
+  font-size: 13px;
+}
+#app .src-row { border-color: rgba(244,236,226,0.08); }
+.src-row:last-child { border-bottom: none; }
+.src-icon { font-size: 14px; line-height: 1; text-align: center; }
+.src-name { font-weight: 500; color: var(--brown); min-width: 0; }
+#app .src-name { color: var(--fg); }
+.src-tag {
+  font: 600 9px/1 'Geist', ui-sans-serif, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.src-tag-pending  { background: rgba(100,150,255,0.12); color: #6496ff; border: 0.5px solid rgba(100,150,255,0.3); }
+.src-tag-fallback { background: rgba(196,98,42,0.12);   color: #c4622a; border: 0.5px solid rgba(196,98,42,0.3);  }
+.src-tag-empty    { background: rgba(148,148,148,0.10); color: #888;    border: 0.5px solid rgba(148,148,148,0.2); }
+#app .src-tag-fallback { color: #e98a64; border-color: rgba(233,138,100,0.35); }
+.src-price {
+  font: 600 13px/1 'Geist', ui-sans-serif, monospace;
+  font-variant-numeric: tabular-nums;
+  color: var(--brown);
+  text-align: right;
+  white-space: nowrap;
+}
+#app .src-price { color: var(--fg); }
+.src-price-pending { color: rgba(100,150,255,0.7); font-weight: 500; font-size: 11px; }
+.src-price-fallback { color: #c4622a; }
+#app .src-price-fallback { color: #e98a64; }
+.src-price-empty { color: rgba(148,148,148,0.6); font-weight: 400; }
+.src-conf-row {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 0.5px solid rgba(26,18,10,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+#app .src-conf-row { border-color: rgba(244,236,226,0.10); }
+.src-conf-note { font-size: 11px; color: rgba(26,18,10,0.45); font-style: italic; }
+#app .src-conf-note { color: rgba(244,236,226,0.4); }
 </style>
 </head>
 <body>
@@ -1845,6 +1899,11 @@ body, body * {
       <div class="detail-section">
         <div class="detail-section-title">Notes</div>
         <div class="detail-story" id="d-story">—</div>
+      </div>
+      <div class="detail-section" id="d-sources-section" style="display:none">
+        <div class="detail-section-title">Sources Checked</div>
+        <div class="src-table" id="d-sources-list"></div>
+        <div class="src-conf-row" id="d-sources-conf"></div>
       </div>
       <div class="detail-section">
         <div class="detail-section-title">Actions</div>
@@ -3170,11 +3229,12 @@ async function verifyPrice(item, idx) {
     if(coll[idx]) {
       coll[idx]._verifying = false;
       if(data.verified_price) {
-        coll[idx].verified_price   = data.verified_price;
-        coll[idx].confidence       = data.confidence;
-        coll[idx].confidence_label = data.confidence_label;
-        coll[idx].price_range      = data.price_range;
-        coll[idx].price_sources    = data.sources;
+        coll[idx].verified_price        = data.verified_price;
+        coll[idx].confidence            = data.confidence;
+        coll[idx].confidence_label      = data.confidence_label;
+        coll[idx].price_range           = data.price_range;
+        coll[idx].price_sources         = data.sources;
+        coll[idx].price_sources_detail  = data.sources_detail;
         // Promote verified price as the display value if no purchase price entered
         if(!coll[idx].paid || coll[idx].paid === 0) coll[idx].val = data.verified_price;
       } else {
@@ -3663,18 +3723,67 @@ function openDetail(idx){
   } else {
     confEl.textContent = item.conf||'—';
   }
-  // Price sources breakdown (injected below the details grid if available)
+  // Story / notes
   const storyEl = document.getElementById('d-story');
-  let story=`You added <strong>${item.name}</strong>`;
-  if(item.place)story+=` purchased in <strong>${item.place}</strong>`;
-  if(item.addedAt)story+=` on <strong>${item.addedAt}</strong>`;
-  story+='.';
-  if(item.paid>0&&displayVal>0){const g=Math.round(((displayVal-item.paid)/item.paid)*100);story+=` It's ${g>=0?'up':'down'} <strong>${Math.abs(g)}%</strong> since you bought it.`;}
-  if(item.price_sources?.length){
-    story+=`<br><br><strong>Sources checked:</strong> `;
-    story+=item.price_sources.map(s=>`${s.name} <span style="opacity:.65">$${Number(s.price).toLocaleString()}</span>`).join(' · ');
+  let story = `You added <strong>${item.name}</strong>`;
+  if(item.place) story += ` purchased in <strong>${item.place}</strong>`;
+  if(item.addedAt) story += ` on <strong>${item.addedAt}</strong>`;
+  story += '.';
+  if(item.paid>0 && displayVal>0){
+    const g = Math.round(((displayVal-item.paid)/item.paid)*100);
+    story += ` It's ${g>=0?'up':'down'} <strong>${Math.abs(g)}%</strong> since you bought it.`;
   }
-  storyEl.innerHTML=story;
+  storyEl.innerHTML = story;
+
+  // Sources Checked table
+  const sourcesSec  = document.getElementById('d-sources-section');
+  const sourcesList = document.getElementById('d-sources-list');
+  const sourcesConf = document.getElementById('d-sources-conf');
+  const detail      = item.price_sources_detail;
+
+  if(detail?.length) {
+    sourcesSec.style.display = '';
+    sourcesList.innerHTML = detail.map(s => {
+      const icon =
+        s.status === 'ok'       ? '✅' :
+        s.status === 'fallback' ? '⚠️' :
+        s.status === 'pending'  ? '⏳' : '❌';
+
+      let priceHtml;
+      if(s.status === 'ok') {
+        priceHtml = `<span class="src-price">$${Number(s.price).toLocaleString()}</span>`;
+      } else if(s.status === 'fallback') {
+        priceHtml = `<span class="src-price src-price-fallback">$${Number(s.price).toLocaleString()}</span>`;
+      } else if(s.status === 'pending') {
+        priceHtml = `<span class="src-price src-price-pending">Pending</span>`;
+      } else {
+        priceHtml = `<span class="src-price src-price-empty">—</span>`;
+      }
+
+      const tagHtml =
+        s.status === 'pending'  ? '<span class="src-tag src-tag-pending">No key</span>'  :
+        s.status === 'fallback' ? '<span class="src-tag src-tag-fallback">Fallback</span>' :
+        s.status === 'empty'    ? '<span class="src-tag src-tag-empty">No data</span>'   : '';
+
+      return `<div class="src-row">
+        <span class="src-icon">${icon}</span>
+        <span class="src-name">${s.name}</span>
+        ${tagHtml}
+        ${priceHtml}
+      </div>`;
+    }).join('');
+
+    // Confidence footer
+    const pendingCount = detail.filter(s => s.status === 'pending').length;
+    const confClass    = confidenceClass(item.confidence);
+    const confBadge    = `<span class="conf-badge conf-${confClass}">${item.confidence_label || 'Low Confidence'}</span>`;
+    const note         = pendingCount > 0
+      ? `<span class="src-conf-note">Activate ${pendingCount} pending source${pendingCount>1?'s':''} to improve confidence</span>`
+      : '';
+    sourcesConf.innerHTML = confBadge + note;
+  } else {
+    sourcesSec.style.display = 'none';
+  }
   show('item-detail');
   document.getElementById('item-detail').scrollTop=0;
 }

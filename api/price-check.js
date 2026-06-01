@@ -343,6 +343,49 @@ async function gptFallback(itemName, category, condition) {
   }
 }
 
+// ─── Sources detail builder ───────────────────────────────────────────────────
+// Takes the final (averaged, outlier-filtered) sources array and the category,
+// and returns a comprehensive per-source status list for the UI to render.
+// Works for both live results and cache-hit reconstruction.
+
+function expectedSources(category) {
+  const c = category.toLowerCase();
+  if (c.includes('sneak') || c.includes('shoe'))
+    return ['eBay Sold', 'StockX', 'Sneaker Market'];
+  if (c.includes('card') || c.includes('pokemon') || c.includes('sport'))
+    return ['eBay Sold', 'PSA Market', 'Card Market'];
+  if (c.includes('watch'))
+    return ['eBay Sold', 'Chrono24', 'WatchCharts'];
+  if (c.includes('luxury') || c.includes('bag') || c.includes('handbag'))
+    return ['eBay Sold', 'The RealReal', 'Vestiaire'];
+  if (c.includes('tech') || c.includes('electronic') || c.includes('phone') || c.includes('laptop'))
+    return ['eBay Sold', 'Swappa', 'Used Market'];
+  return ['eBay Sold', 'Auction Market', 'Collector Market'];
+}
+
+function buildSourcesDetail(sources, category) {
+  const expected   = expectedSources(category);
+  const sourceMap  = Object.fromEntries((sources ?? []).map(s => [s.name, s]));
+  const detail     = [];
+
+  for (const name of expected) {
+    if (name === 'eBay Sold' && !EBAY_APP_ID) {
+      detail.push({ name, status: 'pending', note: 'EBAY_APP_ID not configured' });
+    } else if (sourceMap[name]) {
+      detail.push({ name, status: 'ok', price: sourceMap[name].price, date: sourceMap[name].date });
+    } else {
+      detail.push({ name, status: 'empty', note: 'No listings found' });
+    }
+  }
+
+  // AI fallback always goes last, tagged separately
+  if (sourceMap['AI Estimate']) {
+    detail.push({ name: 'AI Estimate', status: 'fallback', price: sourceMap['AI Estimate'].price, note: 'Fallback — fewer than 2 market sources' });
+  }
+
+  return detail;
+}
+
 // ─── Stable item ID for cache keying ─────────────────────────────────────────
 
 function makeItemId(name, cat, cond) {
@@ -383,6 +426,7 @@ export default async function handler(req, res) {
       confidence_label: cl,
       price_range:      { low: hit.price_range_low, high: hit.price_range_high },
       sources:          hit.sources,
+      sources_detail:   buildSourcesDetail(hit.sources, hit.category),
       sources_checked:  (hit.sources ?? []).length,
       last_updated:     hit.created_at,
       cached:           true,
@@ -406,6 +450,7 @@ export default async function handler(req, res) {
 
   // ── 4. Nothing worked at all ───────────────────────────────────
   if (!result) {
+    const emptySources = rawPrices.map(p => ({ name: p.source, price: Math.round(p.price), date: p.date }));
     return res.status(200).json({
       item:             item_name,
       category:         cat,
@@ -414,7 +459,8 @@ export default async function handler(req, res) {
       confidence:       0,
       confidence_label: 'Insufficient Data',
       price_range:      { low: null, high: null },
-      sources:          rawPrices.map(p => ({ name: p.source, price: Math.round(p.price), date: p.date })),
+      sources:          emptySources,
+      sources_detail:   buildSourcesDetail(emptySources, cat),
       sources_checked:  rawPrices.length,
       last_updated:     new Date().toISOString(),
       note:             'Not enough market data — add a purchase price manually',
@@ -422,7 +468,10 @@ export default async function handler(req, res) {
   }
 
   // ── 5. Build and cache the response ───────────────────────────
-  const response = { item: item_name, category: cat, condition: cond, ...result };
+  const response = {
+    item: item_name, category: cat, condition: cond, ...result,
+    sources_detail: buildSourcesDetail(result.sources, cat),
+  };
   await cacheSet(id, response);
 
   return res.status(200).json(response);
