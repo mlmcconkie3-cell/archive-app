@@ -6,6 +6,24 @@ export const config = {
   },
 };
 
+// Extract a JSON object from a string that may contain surrounding prose.
+// GPT sometimes wraps the JSON in text like "Here you go:\n{...}" even when
+// told not to — this handles that gracefully instead of throwing on JSON.parse.
+function extractJSON(raw) {
+  // 1. Strip markdown code fences
+  const stripped = raw.replace(/```(?:json)?/gi, '').trim();
+  // 2. Try a direct parse first (fastest path — works when GPT behaves)
+  try { return JSON.parse(stripped); } catch {}
+  // 3. Find the first {...} block in case there's leading/trailing prose
+  const match = stripped.match(/\{[\s\S]*\}/);
+  if (match) {
+    try { return JSON.parse(match[0]); } catch (e) {
+      console.error('[extractJSON] matched block failed to parse:', e.message, '\nBlock:', match[0]);
+    }
+  }
+  return null;
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -14,97 +32,121 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
+  // Log key presence immediately so Vercel logs show the failure point
+  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  console.log('[identify] OPENAI_API_KEY present:', !!OPENAI_API_KEY);
+
+  if (!OPENAI_API_KEY) {
+    console.error('[identify] Missing OPENAI_API_KEY environment variable');
+    return res.status(500).json({ error: 'Missing OPENAI_API_KEY' });
+  }
+
   try {
     const { image, description, context } = req.body;
-    const contextStr = context || 'You are an expert collectibles appraiser.';
+    const systemPrompt = context || 'You are an expert collectibles appraiser with deep knowledge of sneakers, trading cards, watches, luxury goods, tech, and collectibles resale markets.';
 
     if (!image && !description) {
       return res.status(400).json({ error: 'No image or description provided' });
     }
 
-    if (!process.env.OPENAI_KEY) {
-      return res.status(500).json({ error: 'API key not configured' });
-    }
-
-    const JSON_PROMPT = `Return ONLY valid JSON with no markdown backticks:
-{"name":"full item name","sub":"year, edition, key details","cat":"Trading Card or Sneaker or Watch or Sports Card or Coin or Tech or Clothing or Luxury or Home or Entertainment or Other","cond":"Mint or Near Mint or Very Good or Good or Fair or Poor","val":estimated_usd_number,"conf":"confidence like 94%"}
-If unsure, return best guess with lower confidence.`;
+    const JSON_PROMPT = `Return ONLY a valid JSON object — no markdown, no prose, nothing else:
+{"name":"full specific item name","sub":"year, edition, colorway, key details","cat":"Trading Card or Sneaker or Watch or Sports Card or Coin or Tech or Clothing or Luxury or Home or Entertainment or Other","cond":"Mint or Near Mint or Very Good or Good or Fair or Poor","val":1234,"conf":"94%"}
+The val field must be an integer (USD). If unsure of any field, return your best estimate with a lower conf value.`;
 
     let messages;
+    let mode;
 
     if (image && description) {
-      // Both photo AND description — use vision with text context
-      console.log('Mode: photo + description');
-      messages = [{
-        role: 'user',
-        content: [
-          {
-            type: 'image_url',
-            image_url: { url: `data:image/jpeg;base64,${image}` }
-          },
-          {
-            type: 'text',
-            text: `${contextStr} The user describes this item as: "${description}". Use both the image and the description to identify it as accurately as possible. ${JSON_PROMPT}`
-          }
-        ]
-      }];
+      mode = 'photo+description';
+      // Vision model with both image and text context
+      messages = [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: [
+            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${image}` } },
+            { type: 'text', text: `The user describes this item as: "${description}". Use both the image and the description to identify it as precisely as possible.\n\n${JSON_PROMPT}` }
+          ]
+        }
+      ];
     } else if (image) {
-      // Photo only — vision identification
-      console.log('Mode: photo only');
-      messages = [{
-        role: 'user',
-        content: [
-          {
-            type: 'image_url',
-            image_url: { url: `data:image/jpeg;base64,${image}` }
-          },
-          {
-            type: 'text',
-            text: `${contextStr} Identify this item. ${JSON_PROMPT}`
-          }
-        ]
-      }];
+      mode = 'photo-only';
+      // Vision model, image only
+      messages = [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: [
+            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${image}` } },
+            { type: 'text', text: `Identify this item and estimate its current US resale market value.\n\n${JSON_PROMPT}` }
+          ]
+        }
+      ];
     } else {
-      // Text only — identify from description alone
-      console.log('Mode: text only, description:', description);
-      messages = [{
-        role: 'user',
-        content: `${contextStr} The user just acquired this item and describes it as: "${description}". Identify it and estimate its current market value. ${JSON_PROMPT}`
-      }];
+      mode = 'text-only';
+      // Text-only — use system+user roles so GPT stays in JSON mode
+      messages = [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `Identify this item and estimate its current US resale market value: "${description}"\n\n${JSON_PROMPT}` }
+      ];
     }
+
+    console.log(`[identify] mode=${mode} description="${description || '(none)'}"`);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_KEY}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         model: 'gpt-4o',
         max_tokens: 400,
-        messages
+        temperature: 0,        // deterministic JSON output
+        messages,
       })
     });
 
+    // Log and surface HTTP-level errors from OpenAI
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(`[identify] OpenAI HTTP ${response.status}:`, errText);
+      return res.status(502).json({ error: `OpenAI returned ${response.status}: ${errText.slice(0, 200)}` });
+    }
+
     const data = await response.json();
 
+    // API-level error object (e.g. invalid_api_key, rate_limit)
     if (data.error) {
-      console.error('OpenAI error:', JSON.stringify(data.error));
+      console.error('[identify] OpenAI API error:', JSON.stringify(data.error));
       return res.status(500).json({ error: data.error.message });
     }
 
-    if (!data.choices || !data.choices[0]) {
-      return res.status(500).json({ error: 'No response from AI' });
+    if (!data.choices?.[0]?.message?.content) {
+      console.error('[identify] Unexpected OpenAI response shape:', JSON.stringify(data));
+      return res.status(500).json({ error: 'No content in OpenAI response' });
     }
 
-    const text = data.choices[0].message.content.replace(/```json|```/g, '').trim();
-    console.log('AI response:', text);
+    const rawText = data.choices[0].message.content;
+    console.log('[identify] raw GPT output:', rawText);
 
-    const item = JSON.parse(text);
+    const item = extractJSON(rawText);
+    if (!item) {
+      console.error('[identify] JSON extraction failed. Raw text was:', rawText);
+      return res.status(500).json({ error: 'Could not parse JSON from GPT response', raw: rawText });
+    }
+
+    // Normalise val to a number in case GPT returns it as a string
+    if (typeof item.val === 'string') {
+      item.val = parseInt(item.val.replace(/[^0-9]/g, ''), 10) || 0;
+    }
+
+    console.log('[identify] parsed item:', JSON.stringify(item));
     return res.status(200).json(item);
 
   } catch (error) {
-    console.error('Handler error:', error.message);
+    // Log the full stack so Vercel function logs show exactly where it blew up
+    console.error('[identify] unhandled error:', error.message, '\n', error.stack);
     return res.status(500).json({ error: error.message });
   }
 }

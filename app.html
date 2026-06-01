@@ -1716,6 +1716,35 @@ body.light-mode .cs-search-hint { background: rgba(0,0,0,0.06) !important; color
 body, body * {
   transition: background-color 0.3s ease, color 0.2s ease, border-color 0.2s ease;
 }
+
+/* ── Price confidence badges ─────────────────────────────────────── */
+.conf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: 600 9.5px/1 'Geist', ui-sans-serif, sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 999px;
+  margin-top: 5px;
+  white-space: nowrap;
+}
+.conf-badge::before { content: "✦"; font-size: 7px; }
+.conf-high  { background: rgba(45,138,78,0.18);  color: #2d8a4e; border: 0.5px solid rgba(45,138,78,0.35); }
+.conf-med   { background: rgba(196,98,42,0.14);  color: #c4622a; border: 0.5px solid rgba(196,98,42,0.30); }
+.conf-low   { background: rgba(148,148,148,0.12); color: #888;   border: 0.5px solid rgba(148,148,148,0.25); }
+.conf-verifying { background: rgba(100,150,255,0.12); color: #6496ff; border: 0.5px solid rgba(100,150,255,0.25); animation: conf-pulse 1.4s ease-in-out infinite; }
+@keyframes conf-pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* Dark-theme overrides for badges on item cards */
+#app .conf-high  { background: rgba(45,200,100,0.18); color: #4ecf80; border-color: rgba(45,200,100,0.35); }
+#app .conf-med   { background: rgba(233,138,100,0.20); color: #e98a64; border-color: rgba(233,138,100,0.35); }
+#app .conf-low   { background: rgba(200,200,200,0.10); color: rgba(244,236,226,0.55); border-color: rgba(200,200,200,0.20); }
+
+/* Verified price highlight on card */
+.sx-verified-row { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+.sx-price-verified { font-size: 15px; font-weight: 700; color: #4ecf80; }
 </style>
 </head>
 <body>
@@ -3109,6 +3138,70 @@ async function confirmAdd(){
   renderRecentStrip();
   checkMilestones();
   btn.disabled=false;btn.textContent='Add to my collection';
+  // Background price verification — doesn't block success screen
+  const newIdx = coll.length - 1;
+  verifyPrice(newItem, newIdx);
+}
+
+// ── Background price verification ──────────────────────────────────
+// Fires after item is saved. Calls /api/price-check, enriches the
+// stored item with a verified_price + confidence, then re-renders.
+async function verifyPrice(item, idx) {
+  // Stamp as "verifying" immediately so the card shows the spinner badge
+  if(coll[idx]) { coll[idx]._verifying = true; saveColl(); }
+
+  // Show "Verifying price..." note on the success screen s-val
+  const sVal = document.getElementById('s-val');
+  if(sVal) {
+    const origText = sVal.textContent;
+    sVal.innerHTML = origText +
+      '<br><span class="conf-badge conf-verifying" style="margin-top:8px">Verifying price across sources…</span>';
+  }
+
+  try {
+    const res = await fetch('/api/price-check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item_name: item.name, category: item.cat, condition: item.cond })
+    });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    if(coll[idx]) {
+      coll[idx]._verifying = false;
+      if(data.verified_price) {
+        coll[idx].verified_price   = data.verified_price;
+        coll[idx].confidence       = data.confidence;
+        coll[idx].confidence_label = data.confidence_label;
+        coll[idx].price_range      = data.price_range;
+        coll[idx].price_sources    = data.sources;
+        // Promote verified price as the display value if no purchase price entered
+        if(!coll[idx].paid || coll[idx].paid === 0) coll[idx].val = data.verified_price;
+      } else {
+        coll[idx].confidence       = 0;
+        coll[idx].confidence_label = data.confidence_label || 'Insufficient Data';
+      }
+      saveColl();
+      updateStats();
+      renderColl();
+    }
+
+    // Update success screen
+    if(sVal && data.verified_price) {
+      sVal.innerHTML =
+        'Verified market value: <strong>$' + Number(data.verified_price).toLocaleString() + '</strong>' +
+        '<br><span class="conf-badge conf-' + confidenceClass(data.confidence) + '" style="margin-top:6px">' +
+        '✦ ' + data.confidence_label + ' · ' + (data.sources_checked || data.sources?.length || 1) + ' sources</span>';
+    }
+  } catch(e) {
+    console.error('[verifyPrice]', e.message);
+    if(coll[idx]) { coll[idx]._verifying = false; saveColl(); }
+  }
+}
+
+function confidenceClass(score) {
+  if(!score || score === 0) return 'low';
+  return score >= 90 ? 'high' : score >= 70 ? 'med' : 'low';
 }
 function resetAdd(){
   cur=null;
@@ -3452,7 +3545,17 @@ function renderColl(){
     const gainText=gain===null?'Tap to add price':(gain>=0?'+':'')+gain+'% vs. paid';
     const imgContent=item._photo?`<img src="${item._photo}" alt="${item.name}">`:`<span>${item.emoji||'📦'}</span>`;
     const c=document.createElement('div');c.className='sx-card';
-    c.innerHTML=`<div class="sx-img">${imgContent}</div><div class="sx-body"><div class="sx-name">${item.name}</div><div class="sx-cat">${item.cat}</div><div class="sx-price-label">Market value</div><div class="sx-price">${item.val>0?'$'+Number(item.val).toLocaleString():'—'}</div><div class="sx-gain ${gainClass}">${gainText}</div></div>`;
+    // Confidence badge — show verified, verifying, or nothing
+    const confBadge = item._verifying
+      ? `<div class="conf-badge conf-verifying">verifying…</div>`
+      : item.verified_price && item.confidence
+        ? `<div class="conf-badge conf-${confidenceClass(item.confidence)}">${item.confidence_label || item.confidence+'%'}</div>`
+        : '';
+    // Use verified price if available, fall back to AI estimate
+    const displayPrice = item.verified_price
+      ? `<div class="sx-verified-row"><span class="sx-price sx-price-verified">$${Number(item.verified_price).toLocaleString()}</span></div>${confBadge}`
+      : `<div class="sx-price">${item.val>0?'$'+Number(item.val).toLocaleString():'—'}</div>${confBadge}`;
+    c.innerHTML=`<div class="sx-img">${imgContent}</div><div class="sx-body"><div class="sx-name">${item.name}</div><div class="sx-cat">${item.cat}</div><div class="sx-price-label">${item.verified_price?'Verified value':'Market value'}</div>${displayPrice}<div class="sx-gain ${gainClass}">${gainText}</div></div>`;
     c.onclick=()=>openDetail(realIdx);
     g.appendChild(c);
   });
@@ -3538,10 +3641,12 @@ function openDetail(idx){
   }
   document.getElementById('detail-name').textContent=item.name;
   document.getElementById('detail-sub').textContent=item.sub||item.notes||'';
-  document.getElementById('detail-value').textContent=item.val>0?'$'+Number(item.val).toLocaleString():'—';
+  // Prefer verified price in the hero value row
+  const displayVal = item.verified_price || item.val;
+  document.getElementById('detail-value').textContent=displayVal>0?'$'+Number(displayVal).toLocaleString():'—';
   const gainBadge=document.getElementById('detail-gain-badge');
-  if(item.paid>0){
-    const g=Math.round(((item.val-item.paid)/item.paid)*100);
+  if(item.paid>0 && displayVal>0){
+    const g=Math.round(((displayVal-item.paid)/item.paid)*100);
     gainBadge.textContent=(g>=0?'+':'')+g+'%';
     gainBadge.className='detail-gain-badge '+(g>=0?'pos':'neg');
     gainBadge.style.display='inline-block';
@@ -3551,14 +3656,25 @@ function openDetail(idx){
   document.getElementById('d-paid').textContent=item.paid>0?'$'+Number(item.paid).toLocaleString():'Not recorded';
   document.getElementById('d-date').textContent=item.addedAt||item.date||'—';
   document.getElementById('d-place').textContent=item.place||'Not recorded';
-  document.getElementById('d-conf').textContent=item.conf||'—';
-  // Story
+  // Show verified confidence if available, otherwise AI identification confidence
+  const confEl = document.getElementById('d-conf');
+  if(item.confidence){
+    confEl.innerHTML = `<span class="conf-badge conf-${confidenceClass(item.confidence)}">${item.confidence_label||item.confidence+'%'} · ${(item.price_sources||[]).length} sources</span>`;
+  } else {
+    confEl.textContent = item.conf||'—';
+  }
+  // Price sources breakdown (injected below the details grid if available)
+  const storyEl = document.getElementById('d-story');
   let story=`You added <strong>${item.name}</strong>`;
   if(item.place)story+=` purchased in <strong>${item.place}</strong>`;
   if(item.addedAt)story+=` on <strong>${item.addedAt}</strong>`;
   story+='.';
-  if(item.paid>0&&item.val>0){const g=Math.round(((item.val-item.paid)/item.paid)*100);story+=` It's ${g>=0?'up':'down'} <strong>${Math.abs(g)}%</strong> since you bought it.`;}
-  document.getElementById('d-story').innerHTML=story;
+  if(item.paid>0&&displayVal>0){const g=Math.round(((displayVal-item.paid)/item.paid)*100);story+=` It's ${g>=0?'up':'down'} <strong>${Math.abs(g)}%</strong> since you bought it.`;}
+  if(item.price_sources?.length){
+    story+=`<br><br><strong>Sources checked:</strong> `;
+    story+=item.price_sources.map(s=>`${s.name} <span style="opacity:.65">$${Number(s.price).toLocaleString()}</span>`).join(' · ');
+  }
+  storyEl.innerHTML=story;
   show('item-detail');
   document.getElementById('item-detail').scrollTop=0;
 }
