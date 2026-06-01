@@ -293,6 +293,131 @@ img{display:block;max-width:100%}
 .tx-list-total-val{font-size:16px;font-weight:700;color:#fff}
 .tx-list-total-change{font-size:10px;color:#f87171;font-weight:600}
 
+/* ── Pricing Engine Section ── */
+.pricing-section{padding:56px 48px;max-width:1100px;margin:0 auto}
+.pricing-heading{
+  font-size:clamp(26px,3.5vw,38px);
+  font-weight:800;
+  letter-spacing:-0.025em;
+  color:#fff;
+  text-align:center;
+  margin-bottom:10px;
+}
+.pricing-sub{
+  font-size:14px;
+  color:rgba(255,255,255,0.45);
+  text-align:center;
+  max-width:480px;
+  margin:0 auto 40px;
+  line-height:1.7;
+}
+/* Flow bar */
+.pricing-flow{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  margin-bottom:44px;
+  flex-wrap:wrap;
+  row-gap:12px;
+}
+.pf-node{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 16px;
+  background:#141414;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:10px;
+  font-size:12px;
+  font-weight:500;
+  color:rgba(255,255,255,0.75);
+  white-space:nowrap;
+}
+.pf-node.highlight{
+  background:#1a1a2e;
+  border-color:rgba(100,130,255,0.35);
+  color:#a5b4fc;
+}
+.pf-node.success{
+  background:#0f1f14;
+  border-color:rgba(74,222,128,0.35);
+  color:#4ade80;
+}
+.pf-dbs{
+  display:flex;
+  gap:6px;
+  padding:8px 12px;
+  background:#141414;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:10px;
+}
+.pf-db{
+  width:26px;height:26px;
+  border-radius:6px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.10);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;
+  font-weight:700;
+  color:rgba(255,255,255,0.5);
+}
+.pf-arrow{
+  font-size:14px;
+  color:rgba(255,255,255,0.18);
+  padding:0 8px;
+  flex-shrink:0;
+}
+/* Category cards grid */
+.pricing-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+.pc-card{
+  background:#111;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;
+  padding:18px 20px;
+  transition:border-color 0.18s,transform 0.18s;
+}
+.pc-card:hover{border-color:rgba(255,255,255,0.18);transform:translateY(-2px)}
+.pc-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.pc-icon{font-size:20px}
+.pc-name{font-size:14px;font-weight:700;color:#fff}
+.pc-sources{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-bottom:14px;
+}
+.pc-source{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:11.5px;
+  color:rgba(255,255,255,0.45);
+}
+.pc-source-dot{
+  width:5px;height:5px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.2);
+  flex-shrink:0;
+}
+.pc-confidence{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.pc-conf-label{font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.25)}
+.pc-conf-bar-wrap{flex:1;height:3px;background:rgba(255,255,255,0.07);border-radius:2px;margin:0 10px;overflow:hidden}
+.pc-conf-bar{height:100%;border-radius:2px;background:linear-gradient(to right,#4ade80,#22c55e)}
+.pc-conf-pct{font-size:10px;font-weight:700;color:#4ade80}
+@media(max-width:900px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.pricing-grid{grid-template-columns:1fr}.pricing-flow{gap:6px}}
+
 /* ── How It Works ── */
 .how-section{padding:56px 48px;max-width:1000px;margin:0 auto}
 .steps{display:flex;align-items:flex-start;gap:0}
@@ -695,6 +820,140 @@ footer{
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Pricing Engine Section -->
+<section class="pricing-section">
+  <p class="section-label" style="margin-bottom:20px">VERIFIED PRICING ENGINE</p>
+  <h2 class="pricing-heading">Pricing You Can Actually Trust</h2>
+  <p class="pricing-sub">Every item runs through 5 live databases simultaneously. No guesses. Just verified market value.</p>
+
+  <div class="pricing-flow">
+    <div class="pf-node">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+      Item Identified
+    </div>
+    <span class="pf-arrow">→</span>
+    <div class="pf-dbs">
+      <div class="pf-db">S</div>
+      <div class="pf-db">G</div>
+      <div class="pf-db">eB</div>
+      <div class="pf-db">P</div>
+      <div class="pf-db">+</div>
+    </div>
+    <span class="pf-arrow">→</span>
+    <div class="pf-node highlight">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      Confidence Score
+    </div>
+    <span class="pf-arrow">→</span>
+    <div class="pf-node success">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Verified Market Value
+    </div>
+  </div>
+
+  <div class="pricing-grid">
+
+    <div class="pc-card">
+      <div class="pc-header"><span class="pc-icon">👟</span><span class="pc-name">Sneakers</span></div>
+      <div class="pc-sources">
+        <div class="pc-source"><span class="pc-source-dot"></span>StockX</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>GOAT</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>eBay</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Flight Club</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Kicks on Fire</div>
+      </div>
+      <div class="pc-confidence">
+        <span class="pc-conf-label">Confidence</span>
+        <div class="pc-conf-bar-wrap"><div class="pc-conf-bar" style="width:97%"></div></div>
+        <span class="pc-conf-pct">97%</span>
+      </div>
+    </div>
+
+    <div class="pc-card">
+      <div class="pc-header"><span class="pc-icon">🃏</span><span class="pc-name">Trading Cards</span></div>
+      <div class="pc-sources">
+        <div class="pc-source"><span class="pc-source-dot"></span>eBay</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>PSA</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>PWCC</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>130point</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Beckett</div>
+      </div>
+      <div class="pc-confidence">
+        <span class="pc-conf-label">Confidence</span>
+        <div class="pc-conf-bar-wrap"><div class="pc-conf-bar" style="width:95%"></div></div>
+        <span class="pc-conf-pct">95%</span>
+      </div>
+    </div>
+
+    <div class="pc-card">
+      <div class="pc-header"><span class="pc-icon">⌚</span><span class="pc-name">Watches</span></div>
+      <div class="pc-sources">
+        <div class="pc-source"><span class="pc-source-dot"></span>Chrono24</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>WatchCharts</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>eBay</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Bob's Watches</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Watchfinder</div>
+      </div>
+      <div class="pc-confidence">
+        <span class="pc-conf-label">Confidence</span>
+        <div class="pc-conf-bar-wrap"><div class="pc-conf-bar" style="width:94%"></div></div>
+        <span class="pc-conf-pct">94%</span>
+      </div>
+    </div>
+
+    <div class="pc-card">
+      <div class="pc-header"><span class="pc-icon">👜</span><span class="pc-name">Luxury</span></div>
+      <div class="pc-sources">
+        <div class="pc-source"><span class="pc-source-dot"></span>eBay</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>The RealReal</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Vestiaire</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Fashionphile</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Rebag</div>
+      </div>
+      <div class="pc-confidence">
+        <span class="pc-conf-label">Confidence</span>
+        <div class="pc-conf-bar-wrap"><div class="pc-conf-bar" style="width:92%"></div></div>
+        <span class="pc-conf-pct">92%</span>
+      </div>
+    </div>
+
+    <div class="pc-card">
+      <div class="pc-header"><span class="pc-icon">💻</span><span class="pc-name">Tech</span></div>
+      <div class="pc-sources">
+        <div class="pc-source"><span class="pc-source-dot"></span>eBay</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Swappa</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Back Market</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Amazon</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>BestBuy</div>
+      </div>
+      <div class="pc-confidence">
+        <span class="pc-conf-label">Confidence</span>
+        <div class="pc-conf-bar-wrap"><div class="pc-conf-bar" style="width:93%"></div></div>
+        <span class="pc-conf-pct">93%</span>
+      </div>
+    </div>
+
+    <div class="pc-card">
+      <div class="pc-header"><span class="pc-icon">🏆</span><span class="pc-name">Collectibles</span></div>
+      <div class="pc-sources">
+        <div class="pc-source"><span class="pc-source-dot"></span>eBay</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Heritage</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Goldin</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>Whatnot</div>
+        <div class="pc-source"><span class="pc-source-dot"></span>COMC</div>
+      </div>
+      <div class="pc-confidence">
+        <span class="pc-conf-label">Confidence</span>
+        <div class="pc-conf-bar-wrap"><div class="pc-conf-bar" style="width:91%"></div></div>
+        <span class="pc-conf-pct">91%</span>
+      </div>
+    </div>
+
   </div>
 </section>
 
