@@ -1799,6 +1799,13 @@ body, body * {
 #app .src-conf-row { border-color: rgba(244,236,226,0.10); }
 .src-conf-note { font-size: 11px; color: rgba(26,18,10,0.45); font-style: italic; }
 #app .src-conf-note { color: rgba(244,236,226,0.4); }
+.src-unavail {
+  font-size: 12.5px;
+  color: rgba(26,18,10,0.4);
+  padding: 8px 0;
+  font-style: italic;
+}
+#app .src-unavail { color: rgba(244,236,226,0.35); }
 </style>
 </head>
 <body>
@@ -3204,12 +3211,16 @@ async function confirmAdd(){
 
 // ── Background price verification ──────────────────────────────────
 // Fires after item is saved. Calls /api/price-check, enriches the
-// stored item with a verified_price + confidence, then re-renders.
+// stored item with a verified_price + confidence + sources, then re-renders.
 async function verifyPrice(item, idx) {
-  // Stamp as "verifying" immediately so the card shows the spinner badge
-  if(coll[idx]) { coll[idx]._verifying = true; saveColl(); }
+  // Stamp as "verifying" immediately so the card shows the spinner badge.
+  // Use item.id to find the right slot — the index can drift if items are
+  // added/removed before this async call resolves.
+  function findIdx() { return coll.findIndex(i => i.id === item.id); }
+  const i0 = findIdx();
+  if(i0 !== -1) { coll[i0]._verifying = true; saveColl(); }
 
-  // Show "Verifying price..." note on the success screen s-val
+  // Show "Verifying price..." note on the success screen
   const sVal = document.getElementById('s-val');
   if(sVal) {
     const origText = sVal.textContent;
@@ -3223,39 +3234,66 @@ async function verifyPrice(item, idx) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ item_name: item.name, category: item.cat, condition: item.cond })
     });
-    if(!res.ok) throw new Error('HTTP ' + res.status);
+
+    // Log the raw HTTP status before trying to parse
+    console.log('[verifyPrice] HTTP status:', res.status, 'for:', item.name);
+
+    if(!res.ok) {
+      const errText = await res.text();
+      console.error('[verifyPrice] API error:', res.status, errText);
+      throw new Error('HTTP ' + res.status);
+    }
+
     const data = await res.json();
 
-    if(coll[idx]) {
-      coll[idx]._verifying = false;
+    // Log the complete response so we can see exactly what the API returned
+    console.log('[verifyPrice] full response:', JSON.stringify(data, null, 2));
+    console.log('[verifyPrice] sources array:', data.sources);
+    console.log('[verifyPrice] sources_detail array:', data.sources_detail);
+
+    const ci = findIdx(); // re-find after await — index may have shifted
+    if(ci !== -1) {
+      coll[ci]._verifying = false;
+
+      // Always store sources regardless of whether verified_price is present —
+      // the old guard `if(data.verified_price)` was dropping sources for
+      // fallback/insufficient-data responses where verified_price is null.
+      coll[ci].price_sources        = data.sources        || [];
+      coll[ci].price_sources_detail = data.sources_detail || [];
+      coll[ci].confidence           = data.confidence      || 0;
+      coll[ci].confidence_label     = data.confidence_label || 'Low Confidence';
+
       if(data.verified_price) {
-        coll[idx].verified_price        = data.verified_price;
-        coll[idx].confidence            = data.confidence;
-        coll[idx].confidence_label      = data.confidence_label;
-        coll[idx].price_range           = data.price_range;
-        coll[idx].price_sources         = data.sources;
-        coll[idx].price_sources_detail  = data.sources_detail;
-        // Promote verified price as the display value if no purchase price entered
-        if(!coll[idx].paid || coll[idx].paid === 0) coll[idx].val = data.verified_price;
-      } else {
-        coll[idx].confidence       = 0;
-        coll[idx].confidence_label = data.confidence_label || 'Insufficient Data';
+        coll[ci].verified_price = data.verified_price;
+        coll[ci].price_range    = data.price_range;
+        // Promote verified price as display value when no purchase price recorded
+        if(!coll[ci].paid || coll[ci].paid === 0) coll[ci].val = data.verified_price;
       }
+
       saveColl();
       updateStats();
       renderColl();
     }
 
     // Update success screen
-    if(sVal && data.verified_price) {
-      sVal.innerHTML =
-        'Verified market value: <strong>$' + Number(data.verified_price).toLocaleString() + '</strong>' +
-        '<br><span class="conf-badge conf-' + confidenceClass(data.confidence) + '" style="margin-top:6px">' +
-        '✦ ' + data.confidence_label + ' · ' + (data.sources_checked || data.sources?.length || 1) + ' sources</span>';
+    if(sVal) {
+      const sourceCount = data.sources_checked || data.sources?.length || 0;
+      if(data.verified_price) {
+        sVal.innerHTML =
+          'Verified market value: <strong>$' + Number(data.verified_price).toLocaleString() + '</strong>' +
+          '<br><span class="conf-badge conf-' + confidenceClass(data.confidence) + '" style="margin-top:6px">' +
+          '✦ ' + data.confidence_label + ' · ' + sourceCount + ' source' + (sourceCount !== 1 ? 's' : '') + '</span>';
+      } else {
+        sVal.innerHTML =
+          (sVal.textContent.replace(/Verifying.*$/,'') || 'Added to collection.') +
+          '<br><span class="conf-badge conf-low" style="margin-top:6px">' +
+          (data.confidence_label || 'Insufficient Data') + ' · ' + sourceCount + ' source' + (sourceCount !== 1 ? 's' : '') + '</span>';
+      }
     }
   } catch(e) {
-    console.error('[verifyPrice]', e.message);
-    if(coll[idx]) { coll[idx]._verifying = false; saveColl(); }
+    console.error('[verifyPrice] error:', e.message, e.stack);
+    const ci = findIdx();
+    if(ci !== -1) { coll[ci]._verifying = false; saveColl(); }
   }
 }
 
@@ -3739,10 +3777,23 @@ function openDetail(idx){
   const sourcesSec  = document.getElementById('d-sources-section');
   const sourcesList = document.getElementById('d-sources-list');
   const sourcesConf = document.getElementById('d-sources-conf');
-  const detail      = item.price_sources_detail;
+
+  // Prefer rich sources_detail (has status flags). Fall back to plain sources
+  // array (older items saved before sources_detail was stored).
+  const detail = item.price_sources_detail?.length ? item.price_sources_detail
+    : (item.price_sources?.length
+        ? item.price_sources.map(s => ({
+            name:   s.name,
+            status: s.name === 'AI Estimate' ? 'fallback' : 'ok',
+            price:  s.price,
+            date:   s.date
+          }))
+        : null);
+
+  // Always show the section — either rows or an unavailable message
+  sourcesSec.style.display = '';
 
   if(detail?.length) {
-    sourcesSec.style.display = '';
     sourcesList.innerHTML = detail.map(s => {
       const icon =
         s.status === 'ok'       ? '✅' :
@@ -3750,9 +3801,9 @@ function openDetail(idx){
         s.status === 'pending'  ? '⏳' : '❌';
 
       let priceHtml;
-      if(s.status === 'ok') {
+      if(s.status === 'ok' && s.price) {
         priceHtml = `<span class="src-price">$${Number(s.price).toLocaleString()}</span>`;
-      } else if(s.status === 'fallback') {
+      } else if(s.status === 'fallback' && s.price) {
         priceHtml = `<span class="src-price src-price-fallback">$${Number(s.price).toLocaleString()}</span>`;
       } else if(s.status === 'pending') {
         priceHtml = `<span class="src-price src-price-pending">Pending</span>`;
@@ -3776,13 +3827,20 @@ function openDetail(idx){
     // Confidence footer
     const pendingCount = detail.filter(s => s.status === 'pending').length;
     const confClass    = confidenceClass(item.confidence);
-    const confBadge    = `<span class="conf-badge conf-${confClass}">${item.confidence_label || 'Low Confidence'}</span>`;
-    const note         = pendingCount > 0
+    const confBadge    = item.confidence_label
+      ? `<span class="conf-badge conf-${confClass}">${item.confidence_label}</span>`
+      : '';
+    const note = pendingCount > 0
       ? `<span class="src-conf-note">Activate ${pendingCount} pending source${pendingCount>1?'s':''} to improve confidence</span>`
       : '';
     sourcesConf.innerHTML = confBadge + note;
+  } else if(item._verifying) {
+    sourcesList.innerHTML = `<div class="src-unavail"><span class="conf-badge conf-verifying">Verifying sources…</span></div>`;
+    sourcesConf.innerHTML = '';
   } else {
-    sourcesSec.style.display = 'none';
+    // Price check hasn't run yet or returned nothing
+    sourcesList.innerHTML = `<div class="src-unavail">Sources data unavailable — price not yet verified</div>`;
+    sourcesConf.innerHTML = '';
   }
   show('item-detail');
   document.getElementById('item-detail').scrollTop=0;
