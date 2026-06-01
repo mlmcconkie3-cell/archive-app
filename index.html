@@ -595,6 +595,127 @@ footer{
   .nav-links{display:none}
   .stats-right{gap:24px}
 }
+
+/* ════════════════════════════════════════
+   ELITE POLISH
+   ════════════════════════════════════════ */
+
+/* Grain texture overlay */
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:0.028;
+  pointer-events:none;
+  z-index:9999;
+}
+
+/* ── Hero gradient backdrop ── */
+.hero{position:relative}
+.hero::before{
+  content:'';
+  position:absolute;
+  width:800px;height:700px;
+  left:-120px;top:-100px;
+  background:radial-gradient(ellipse 60% 60% at 30% 40%, rgba(88,28,135,0.22) 0%, rgba(30,10,80,0.10) 45%, transparent 70%);
+  pointer-events:none;z-index:0;
+}
+.hero-text,.hero-visual{position:relative;z-index:1}
+
+/* ── Animated hero arrow ── */
+@keyframes arrowSlide{
+  0%,100%{transform:translateX(0);opacity:0.35}
+  50%{transform:translateX(8px);opacity:0.9}
+}
+.hero-arrow{animation:arrowSlide 2s cubic-bezier(0.4,0,0.6,1) infinite}
+
+/* ── How It Works arrows fade-in-right ── */
+@keyframes stepArrowIn{
+  from{opacity:0;transform:translateX(-10px)}
+  to{opacity:1;transform:translateX(0)}
+}
+.step-arrow{opacity:0}
+.step-arrow.visible{animation:stepArrowIn 0.5s ease forwards}
+.step:nth-child(1) .step-arrow.visible{animation-delay:0s}
+.step:nth-child(2) .step-arrow.visible{animation-delay:0.22s}
+.step:nth-child(3) .step-arrow.visible{animation-delay:0.44s}
+.step:nth-child(4) .step-arrow.visible{animation-delay:0.66s}
+
+/* ── Universal button polish ── */
+.btn-white,.btn-outline,.btn-learn,.btn-cta,.nav-cta{
+  transition:transform 0.22s cubic-bezier(0.34,1.56,0.64,1),opacity 0.18s,box-shadow 0.22s,border-color 0.18s,color 0.18s,background 0.18s!important;
+}
+.btn-white:hover{transform:scale(1.04);opacity:1;box-shadow:0 8px 28px rgba(255,255,255,0.18)!important}
+.btn-outline:hover{transform:scale(1.03)}
+.btn-learn:hover{transform:scale(1.03)}
+.btn-cta:hover{transform:scale(1.03);opacity:1;box-shadow:0 10px 32px rgba(255,255,255,0.2)!important}
+.nav-cta:hover{transform:scale(1.04);opacity:1}
+
+/* ── Card lift + glow ── */
+.hero-card{transition:transform 0.25s ease,box-shadow 0.25s ease,border-color 0.25s}
+.hero-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(0,0,0,0.55);border-color:rgba(255,255,255,0.18)}
+.side-card{transition:transform 0.25s ease,box-shadow 0.25s ease,border-color 0.25s!important}
+.side-card:hover{transform:translateY(-4px)!important;box-shadow:0 20px 48px rgba(0,0,0,0.55)!important;border-color:rgba(255,255,255,0.18)!important}
+.use-card{transition:transform 0.25s ease,box-shadow 0.25s ease,border-color 0.25s!important}
+.use-card:hover{transform:translateY(-4px)!important;box-shadow:0 20px 48px rgba(0,0,0,0.5)!important;border-color:rgba(255,255,255,0.18)!important}
+
+/* ── Pricing category colored glows ── */
+.pc-card{transition:transform 0.25s ease,box-shadow 0.25s ease,border-color 0.25s!important}
+.pc-card:hover{transform:translateY(-4px)!important}
+.pc-card:nth-child(1):hover{border-color:rgba(124,92,238,0.45)!important;box-shadow:0 12px 40px rgba(124,92,238,0.18),0 4px 16px rgba(0,0,0,0.5)!important}
+.pc-card:nth-child(2):hover{border-color:rgba(245,158,11,0.45)!important;box-shadow:0 12px 40px rgba(245,158,11,0.18),0 4px 16px rgba(0,0,0,0.5)!important}
+.pc-card:nth-child(3):hover{border-color:rgba(59,130,246,0.45)!important;box-shadow:0 12px 40px rgba(59,130,246,0.18),0 4px 16px rgba(0,0,0,0.5)!important}
+.pc-card:nth-child(4):hover{border-color:rgba(236,72,153,0.45)!important;box-shadow:0 12px 40px rgba(236,72,153,0.18),0 4px 16px rgba(0,0,0,0.5)!important}
+.pc-card:nth-child(5):hover{border-color:rgba(99,102,241,0.45)!important;box-shadow:0 12px 40px rgba(99,102,241,0.18),0 4px 16px rgba(0,0,0,0.5)!important}
+.pc-card:nth-child(6):hover{border-color:rgba(251,191,36,0.45)!important;box-shadow:0 12px 40px rgba(251,191,36,0.18),0 4px 16px rgba(0,0,0,0.5)!important}
+
+/* ── Section gradient backdrops ── */
+/* Two Sides: warm gold on vault, cool blue on auto */
+.side-card:first-child{background:linear-gradient(145deg,#111 0%,#12100a 100%)!important;box-shadow:inset 0 0 80px rgba(180,130,20,0.05)}
+.side-card:last-child{background:linear-gradient(145deg,#0d1118 0%,#111 100%)!important;box-shadow:inset 0 0 80px rgba(30,80,200,0.05)}
+
+/* Pricing section backdrop */
+.pricing-section{position:relative}
+.pricing-section::before{
+  content:'';
+  position:absolute;
+  width:700px;height:500px;
+  left:50%;top:40%;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse,rgba(74,222,128,0.05) 0%,transparent 65%);
+  pointer-events:none;
+}
+.pricing-heading,.pricing-sub,.pricing-flow,.pricing-grid{position:relative;z-index:1}
+
+/* CTA glow */
+.cta-section{position:relative;overflow:hidden}
+.cta-section::before{
+  content:'';
+  position:absolute;
+  width:600px;height:400px;
+  left:50%;top:-60px;
+  transform:translateX(-50%);
+  background:radial-gradient(ellipse,rgba(255,255,255,0.05) 0%,transparent 65%);
+  pointer-events:none;
+}
+.cta-h2,.cta-sub,.btn-cta{position:relative;z-index:1}
+
+/* ── Typography upgrades ── */
+.hero-h1{font-size:clamp(52px,6.5vw,80px)!important;line-height:1.02!important}
+.section-label{letter-spacing:0.18em!important}
+/* Pop numbers */
+.vault-card-val,.vault-total-val,.tx-list-total-val,.an-total,.stat-val{font-weight:900!important}
+.vault-card-change,.vault-total-change,.pc-conf-pct{font-weight:800!important}
+
+/* ── Merchant icon badges ── */
+.merchant-badge{
+  width:28px;height:28px;
+  border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;
+  flex-shrink:0;
+  letter-spacing:0;
+}
 </style>
 </head>
 <body>
@@ -772,7 +893,7 @@ footer{
       <div class="tx-list-wrap">
         <div class="tx-list-header">Transactions</div>
         <div class="tx-list-item">
-          <div class="tx-list-logo">🛒</div>
+          <div class="merchant-badge" style="background:#00b020;color:#fff">SX</div>
           <div style="flex:1">
             <div class="tx-list-name">StockX</div>
             <div class="tx-list-date">May 24, 2024</div>
@@ -780,7 +901,7 @@ footer{
           <div class="tx-list-amt">-$220.00</div>
         </div>
         <div class="tx-list-item">
-          <div class="tx-list-logo">📦</div>
+          <div class="merchant-badge" style="background:#ff9900;color:#000">a</div>
           <div style="flex:1">
             <div class="tx-list-name">Amazon</div>
             <div class="tx-list-date">May 24, 2024</div>
@@ -788,7 +909,7 @@ footer{
           <div class="tx-list-amt">-$89.99</div>
         </div>
         <div class="tx-list-item">
-          <div class="tx-list-logo">👟</div>
+          <div class="merchant-badge" style="background:#111;color:#fff;border:1px solid rgba(255,255,255,0.15)">NK</div>
           <div style="flex:1">
             <div class="tx-list-name">Nike</div>
             <div class="tx-list-date">May 23, 2024</div>
@@ -796,7 +917,7 @@ footer{
           <div class="tx-list-amt">-$129.99</div>
         </div>
         <div class="tx-list-item">
-          <div class="tx-list-logo">🌮</div>
+          <div class="merchant-badge" style="background:#702082;color:#fff">TB</div>
           <div style="flex:1">
             <div class="tx-list-name">Taco Bell</div>
             <div class="tx-list-date">May 23, 2024</div>
@@ -804,7 +925,7 @@ footer{
           <div class="tx-list-amt">-$12.45</div>
         </div>
         <div class="tx-list-item">
-          <div class="tx-list-logo">🚗</div>
+          <div class="merchant-badge" style="background:#276ef1;color:#fff">Ub</div>
           <div style="flex:1">
             <div class="tx-list-name">Uber</div>
             <div class="tx-list-date">May 23, 2024</div>
@@ -1133,6 +1254,24 @@ footer{
     </div>
   </div>
 </footer>
+
+<script>
+// How It Works arrows: fire when section scrolls into view
+(function(){
+  var section = document.querySelector('.how-section');
+  if(!section) return;
+  var fired = false;
+  var obs = new IntersectionObserver(function(entries){
+    if(fired || !entries[0].isIntersecting) return;
+    fired = true;
+    document.querySelectorAll('.step-arrow').forEach(function(el){
+      el.classList.add('visible');
+    });
+    obs.disconnect();
+  }, {threshold: 0.3});
+  obs.observe(section);
+})();
+</script>
 
 </body>
 </html>
