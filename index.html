@@ -203,7 +203,7 @@ img{display:block;max-width:100%}
 
 /* ── Two Sides section ── */
 .two-sides{
-  padding:56px 48px;
+  padding:40px 48px 56px;
   max-width:1100px;
   margin:0 auto;
 }
@@ -601,7 +601,7 @@ footer{
    ════════════════════════════════════════ */
 .ha-section{
   display:flex;align-items:flex-start;gap:48px;
-  padding:40px 48px 52px;max-width:1280px;margin:0 auto;
+  padding:36px 48px 32px;max-width:1280px;margin:0 auto;
   position:relative;
 }
 .ha-section::before{
@@ -741,13 +741,11 @@ footer{
 }
 .conn-svg{width:2px;height:180px;overflow:visible}
 .conn-particle{
-  position:absolute;width:8px;height:8px;border-radius:50%;
-  background:radial-gradient(circle,#f59e0b,#3b82f6);
-  box-shadow:0 0 8px rgba(245,158,11,0.7);
+  position:absolute;width:10px;height:10px;border-radius:50%;
+  background:radial-gradient(circle,#fff 0%,#4ade80 40%,#3b82f6 100%);
+  box-shadow:0 0 14px 4px rgba(74,222,128,0.6), 0 0 6px rgba(59,130,246,0.8);
   opacity:0;top:50%;left:50%;transform:translate(-50%,-50%);
-  transition:top 0.6s cubic-bezier(0.22,1,0.36,1),opacity 0.2s;
 }
-.conn-particle.active{opacity:1}
 
 /* Chase card */
 .cc-card{
@@ -995,7 +993,7 @@ body::after{
           <img src="https://images.unsplash.com/photo-1607622678872-db5d1b41d3d5?auto=format&fit=crop&w=200&q=80" alt="Charizard">
         </div>
         <div class="vp-item" id="vi2">
-          <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=200&q=80" alt="AirPods Max">
+          <img src="https://images.unsplash.com/photo-1614944848693-8e3a2c05cdec?auto=format&fit=crop&w=200&q=80" alt="AirPods Max">
         </div>
         <!-- Card reveal (hidden initially) -->
         <div class="vpc-wrap" id="vpcWrap">
@@ -1556,15 +1554,15 @@ body::after{
       name:'Travis Scott Jordan 1', cat:'Sneakers', price:'$850' },
     { img:'https://images.unsplash.com/photo-1607622678872-db5d1b41d3d5?auto=format&fit=crop&w=200&q=80',
       name:'Charizard Holo 1st Ed', cat:'Trading Card', price:'$320' },
-    { img:'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=200&q=80',
+    { img:'https://images.unsplash.com/photo-1614944848693-8e3a2c05cdec?auto=format&fit=crop&w=200&q=80',
       name:'AirPods Max Silver', cat:'Tech', price:'$449' }
   ];
   var TX = [
-    { badge:'SX', color:'#00b020', text:'#fff', name:'StockX', detail:'Jordan 4 Retro', cat:'Sneakers', amt:'-$220.00', vaulted:true },
-    { badge:'a',  color:'#ff9900', text:'#000', name:'Amazon',  detail:'Amazon Purchase',  cat:'Shopping',  amt:'-$89.99',  vaulted:false },
-    { badge:'Ub', color:'#276ef1', text:'#fff', name:'Uber',    detail:'Uber Ride',         cat:'Transport',  amt:'-$18.35',  vaulted:false },
-    { badge:'NK', color:'#111',    text:'#fff', name:'Nike',    detail:'Nike Dunk Low',     cat:'Sneakers',  amt:'-$129.99', vaulted:false },
-    { badge:'TB', color:'#702082', text:'#fff', name:'Taco Bell',detail:'Taco Bell',        cat:'Food',      amt:'-$12.45',  vaulted:false }
+    { badge:'SX', color:'#00b020', text:'#fff', name:'StockX',    detail:'StockX Purchase', cat:'Sneakers',  amt:'-$220.00', vaulted:false },
+    { badge:'a',  color:'#ff9900', text:'#000', name:'Amazon',    detail:'Amazon Purchase', cat:'Shopping',  amt:'-$89.99',  vaulted:false },
+    { badge:'Ub', color:'#276ef1', text:'#fff', name:'Uber',      detail:'Uber Ride',       cat:'Transport', amt:'-$18.35',  vaulted:false },
+    { badge:'NK', color:'#111',    text:'#fff', name:'Nike',      detail:'Nike Dunk Low',   cat:'Sneakers',  amt:'-$129.99', vaulted:true  },
+    { badge:'TB', color:'#702082', text:'#fff', name:'Taco Bell', detail:'Taco Bell',       cat:'Food',      amt:'-$12.45',  vaulted:false }
   ];
 
   /* ── DOM refs ── */
@@ -1591,18 +1589,17 @@ body::after{
   /* ── Orbit state ── */
   var orbiting = true;
   var activeIdx = 0;
-  var orbitAngle = 0;           // radians, advances each frame
-  var ORBIT_SPEED = 0.25;       // rad/sec
-  var ORBIT_R = 68;             // px from stage center
-  var ORBIT_RY = 30;            // y compression for ellipse
-  var stageW = 0, stageH = 0;
+  var orbitAngle = -Math.PI/2;  // start at top (12 o'clock)
+  var ORBIT_SPEED = 0.28;       // rad/sec
+  var ORBIT_R = 72;             // px from stage center
+  var ORBIT_RY = 32;            // y compression for ellipse
   var raf = null;
   var lastT = null;
   var phaseOffsets = [0, 2.094, 4.189]; // 0°, 120°, 240°
 
   function getStageCenter(){
-    var r = vaultStage.getBoundingClientRect();
-    return { cx: r.width/2, cy: r.height/2 };
+    // use offsetWidth/Height for layout-stable values
+    return { cx: vaultStage.offsetWidth/2, cy: vaultStage.offsetHeight/2 };
   }
 
   function applyOrbitPos(){
@@ -1717,15 +1714,18 @@ body::after{
   /* ── Connector particle ── */
   function fireConnector(){
     var p = connParticle;
-    p.style.top = '20%';
-    p.classList.add('active');
+    // start at bottom (auto panel side), travel up to vault panel side
+    p.style.transition = 'none';
+    p.style.top = '90%';
+    p.style.opacity = '0';
+    p.offsetHeight; // force reflow
+    p.style.transition = 'top 0.65s cubic-bezier(0.22,1,0.36,1), opacity 0.2s';
+    p.style.opacity = '1';
+    setTimeout(function(){ p.style.top = '5%'; }, 30);
     setTimeout(function(){
-      p.style.top = '80%';
-    }, 50);
-    setTimeout(function(){
-      p.classList.remove('active');
-      p.style.top = '50%';
-    }, 700);
+      p.style.opacity = '0';
+      setTimeout(function(){ p.style.top = '50%'; p.style.transition='none'; }, 300);
+    }, 680);
   }
 
   /* ── ArchiveAuto cycle ── */
@@ -1769,9 +1769,11 @@ body::after{
       });
     }, 2700);
 
-    // Phase 4: Vault handoff 4-5s (first tile)
+    // Phase 4: Vault handoff — Nike tile lifts with glow + badge
+    var vaultedIdx = TX.findIndex(function(t){ return t.vaulted; });
     setTimeout(function(){
-      tiles[0].classList.add('vaulted');
+      if(vaultedIdx >= 0 && tiles[vaultedIdx]) tiles[vaultedIdx].classList.add('vaulted');
+      fireConnector(); // particle flies from auto → vault at handoff moment
     }, 4200);
 
     // Reset 5.5s
