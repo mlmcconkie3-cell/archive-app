@@ -597,6 +597,240 @@ footer{
 }
 
 /* ════════════════════════════════════════
+   DUAL HERO ANIMATIONS
+   ════════════════════════════════════════ */
+.ha-section{
+  display:flex;align-items:flex-start;gap:48px;
+  padding:40px 48px 52px;max-width:1280px;margin:0 auto;
+  position:relative;
+}
+.ha-section::before{
+  content:'';position:absolute;
+  width:900px;height:700px;left:-150px;top:-60px;
+  background:radial-gradient(ellipse 50% 55% at 30% 45%,rgba(88,28,135,0.20) 0%,rgba(30,10,80,0.08) 50%,transparent 72%);
+  pointer-events:none;z-index:0;
+}
+.ha-text{flex:0 0 280px;position:relative;z-index:1}
+.ha-right{
+  flex:1;min-width:0;
+  display:flex;align-items:stretch;gap:0;
+  position:relative;z-index:1;
+}
+.ha-mobile-fallback{display:none;gap:16px}
+
+/* Panel base */
+.ha-panel{
+  flex:1;min-width:0;
+  background:#111;
+  border:1px solid rgba(255,255,255,0.09);
+  border-radius:18px;
+  padding:18px;
+  position:relative;
+  overflow:hidden;
+}
+.ha-panel-vault{background:linear-gradient(145deg,#111,#12100a)}
+.ha-panel-auto{background:linear-gradient(145deg,#0c1016,#111)}
+.hap-label{
+  display:flex;align-items:center;gap:6px;
+  font-size:9.5px;font-weight:700;letter-spacing:0.14em;
+  color:rgba(255,255,255,0.35);margin-bottom:16px;
+}
+.hap-dot{width:6px;height:6px;border-radius:50%}
+.hap-glow{
+  position:absolute;width:200px;height:200px;
+  top:40%;left:50%;transform:translate(-50%,-50%);
+  border-radius:50%;filter:blur(60px);pointer-events:none;
+}
+.hap-glow-gold{background:rgba(245,158,11,0.12)}
+.hap-glow-blue{background:rgba(59,130,246,0.10)}
+
+/* Vault stage */
+.vp-stage{
+  position:relative;height:200px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:14px;
+}
+.vp-item{
+  position:absolute;
+  width:88px;height:88px;
+  border-radius:14px;overflow:hidden;
+  border:1.5px solid rgba(255,255,255,0.10);
+  box-shadow:0 8px 28px rgba(0,0,0,0.55);
+  transition:transform 0.7s cubic-bezier(0.22,1,0.36,1),
+             opacity 0.5s ease,
+             filter 0.5s ease,
+             box-shadow 0.5s ease;
+  will-change:transform,opacity,filter;
+}
+.vp-item img{width:100%;height:100%;object-fit:cover}
+.vp-item.vpi-active{
+  border-color:rgba(245,158,11,0.5);
+  box-shadow:0 0 0 3px rgba(245,158,11,0.15),0 12px 40px rgba(0,0,0,0.6);
+}
+.vp-item.vpi-dim{opacity:0.28;filter:blur(2px)}
+
+/* Vault reveal card */
+.vpc-wrap{
+  position:absolute;inset:0;
+  display:flex;align-items:center;gap:12px;
+  background:rgba(18,16,10,0.82);
+  backdrop-filter:blur(20px);
+  border-radius:14px;
+  border:1px solid rgba(245,158,11,0.25);
+  padding:14px;
+  opacity:0;transform:scale(0.94);
+  transition:opacity 0.4s ease,transform 0.4s cubic-bezier(0.22,1,0.36,1);
+  pointer-events:none;
+  z-index:10;
+}
+.vpc-wrap.visible{opacity:1;transform:scale(1)}
+.vpc-wrap.confirm{border-color:rgba(74,222,128,0.5);box-shadow:0 0 32px rgba(74,222,128,0.12)}
+.vpc-img{
+  width:68px;height:68px;border-radius:10px;overflow:hidden;flex-shrink:0;
+  background:#1a1a1a;
+}
+.vpc-img img{width:100%;height:100%;object-fit:cover}
+.vpc-body{flex:1;min-width:0}
+.vpc-name{
+  font-size:12px;font-weight:600;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  opacity:0;transform:translateY(5px);
+  transition:opacity 0.35s ease,transform 0.35s ease;
+}
+.vpc-cat{
+  font-size:10px;color:rgba(255,255,255,0.4);margin-top:3px;
+  opacity:0;transform:translateY(5px);
+  transition:opacity 0.35s 0.12s ease,transform 0.35s 0.12s ease;
+}
+.vpc-market{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:8px;
+  opacity:0;transform:translateY(5px);
+  transition:opacity 0.35s 0.25s ease,transform 0.35s 0.25s ease;
+}
+.vpc-mlabel{font-size:8.5px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:rgba(255,255,255,0.3)}
+.vpc-price{font-size:15px;font-weight:900;color:#f59e0b;letter-spacing:-0.02em}
+.vpc-price.green{color:#4ade80}
+.vpc-wrap.data-in .vpc-name,
+.vpc-wrap.data-in .vpc-cat,
+.vpc-wrap.data-in .vpc-market{opacity:1;transform:translateY(0)}
+.vpc-glow-confirm{
+  position:absolute;inset:0;border-radius:inherit;
+  background:rgba(74,222,128,0.06);
+  opacity:0;transition:opacity 0.3s;pointer-events:none;
+}
+.vpc-glow-confirm.on{opacity:1}
+@keyframes vaultPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+.vpc-wrap.pulsing{animation:vaultPulse 0.6s cubic-bezier(0.22,1,0.36,1)}
+
+/* Progress dots */
+.vp-dots{display:flex;justify-content:center;gap:6px}
+.vpd{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,0.18);
+  transition:background 0.3s,transform 0.3s;cursor:pointer;
+}
+.vpd-active{background:#f59e0b;transform:scale(1.3)}
+
+/* Connector */
+.ha-conn{
+  width:32px;flex-shrink:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  position:relative;
+}
+.conn-svg{width:2px;height:180px;overflow:visible}
+.conn-particle{
+  position:absolute;width:8px;height:8px;border-radius:50%;
+  background:radial-gradient(circle,#f59e0b,#3b82f6);
+  box-shadow:0 0 8px rgba(245,158,11,0.7);
+  opacity:0;top:50%;left:50%;transform:translate(-50%,-50%);
+  transition:top 0.6s cubic-bezier(0.22,1,0.36,1),opacity 0.2s;
+}
+.conn-particle.active{opacity:1}
+
+/* Chase card */
+.cc-card{
+  background:linear-gradient(135deg,#1a2a4a 0%,#0f1f3a 60%,#0a1628 100%);
+  border:1px solid rgba(100,140,220,0.25);
+  border-radius:12px;padding:14px 16px 12px;
+  position:relative;overflow:hidden;margin-bottom:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+  transition:box-shadow 0.4s,transform 0.4s;
+}
+.cc-card.glow{
+  box-shadow:0 0 0 2px rgba(74,222,128,0.4),0 8px 32px rgba(74,222,128,0.15);
+  transform:scale(1.02);
+}
+.cc-card::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:100px;height:100px;
+  background:radial-gradient(circle,rgba(255,255,255,0.06),transparent 70%);
+}
+.cc-inner{position:relative;z-index:1}
+.cc-chip{
+  width:26px;height:20px;border-radius:4px;
+  background:linear-gradient(135deg,#c8a84b,#f0d070,#c8a84b);
+  margin-bottom:18px;position:relative;overflow:hidden;
+}
+.cc-chip-h{position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(0,0,0,0.3);transform:translateY(-50%)}
+.cc-chip-v{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(0,0,0,0.3);transform:translateX(-50%)}
+.cc-brand{font-size:8px;font-weight:800;letter-spacing:0.18em;color:rgba(255,255,255,0.6)}
+.cc-num{font-size:10px;letter-spacing:0.12em;color:rgba(255,255,255,0.5);margin-top:4px}
+.cc-ok{
+  font-size:10px;font-weight:600;color:#4ade80;
+  margin-top:8px;opacity:0;
+  transition:opacity 0.4s;
+}
+.cc-ok.show{opacity:1}
+
+/* Transaction tiles */
+.ap-tiles{display:flex;flex-direction:column;gap:5px}
+.apt{
+  display:flex;align-items:center;gap:9px;
+  padding:7px 10px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:9px;
+  opacity:0;transform:translateX(-12px);
+  transition:opacity 0.35s ease,transform 0.35s ease;
+}
+.apt.in{opacity:1;transform:translateX(0)}
+.apt.processing{border-color:rgba(59,130,246,0.35);background:rgba(59,130,246,0.06)}
+.apt.vaulted{border-color:rgba(74,222,128,0.35);background:rgba(74,222,128,0.06);transform:translateY(-4px)}
+.apt-badge{
+  width:26px;height:26px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;flex-shrink:0;
+}
+.apt-info{flex:1;min-width:0}
+.apt-name{font-size:11.5px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.apt-cat{font-size:9.5px;color:#3b82f6;margin-top:1px;opacity:0;transition:opacity 0.3s}
+.apt.processing .apt-cat{opacity:1}
+.apt-amt{font-size:11px;font-weight:600;color:rgba(255,255,255,0.6);flex-shrink:0}
+.apt-vault-badge{
+  font-size:9px;font-weight:700;color:#4ade80;
+  background:rgba(74,222,128,0.12);
+  border:1px solid rgba(74,222,128,0.3);
+  border-radius:5px;padding:2px 6px;flex-shrink:0;
+  opacity:0;transform:translateX(8px);
+  transition:opacity 0.3s,transform 0.3s;
+}
+.apt.vaulted .apt-vault-badge{opacity:1;transform:translateX(0)}
+
+/* Responsive */
+@media(max-width:900px){
+  .ha-right{display:none}
+  .ha-mobile-fallback{display:flex}
+  .ha-text{flex:none}
+  .ha-section{flex-direction:column;align-items:flex-start;padding:36px 24px 44px}
+}
+.hmf-card{
+  flex:1;background:#111;border:1px solid rgba(255,255,255,0.09);
+  border-radius:16px;padding:16px;
+}
+
+/* ════════════════════════════════════════
    ELITE POLISH
    ════════════════════════════════════════ */
 
@@ -732,70 +966,110 @@ body::after{
   <a href="/app.html" class="nav-cta">Join Waitlist</a>
 </nav>
 
-<!-- Hero -->
-<section class="hero">
-  <div class="hero-text">
+<!-- Hero: animated dual panels -->
+<section class="ha-section" id="haSection">
+  <!-- Left: text -->
+  <div class="ha-text">
     <p class="hero-eyebrow">Your personal acquisition OS</p>
-    <h1 class="hero-h1">
-      Everything<br>you buy.<br>Automatically<br><span class="dim">archived.</span>
-    </h1>
+    <h1 class="hero-h1">Everything<br>you buy.<br>Automatically<br><span class="dim">archived.</span></h1>
     <p class="hero-sub">Link your cards, snap a photo, or forward a receipt — Archive catalogs it all instantly.</p>
     <div class="hero-btns">
-      <a href="/app.html" class="btn-white">
-        Join the Waitlist
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
-      <a href="#how" class="btn-outline">
-        See How It Works
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M10 8l4 4-4 4"/></svg>
-      </a>
+      <a href="/app.html" class="btn-white">Join the Waitlist <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a href="#how" class="btn-outline">See How It Works <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M10 8l4 4-4 4"/></svg></a>
     </div>
   </div>
 
-  <!-- Hero visual: transaction card → vault card -->
-  <div class="hero-visual">
-    <!-- Transaction panel -->
-    <div class="hero-card tx-card">
-      <div class="tx-label">CHASE SAPPHIRE — 1234
-        <svg style="float:right;opacity:0.4" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-      </div>
-      <!-- Product image -->
-      <div style="width:100%;height:120px;background:#1a1a1a;border-radius:10px;overflow:hidden;margin-bottom:12px">
-        <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=300&q=80" alt="Jordan 4" style="width:100%;height:100%;object-fit:cover">
-      </div>
-      <div class="tx-row" style="border:none;padding:0">
-        <div class="tx-info">
-          <div class="tx-name">Jordan 4 Retro Military Black</div>
-          <div class="tx-meta">Nike · Sneakers</div>
+  <!-- Right: two animation panels -->
+  <div class="ha-right">
+
+    <!-- ── VAULT PANEL ── -->
+    <div class="ha-panel ha-panel-vault" id="vaultPanel">
+      <div class="hap-label"><span class="hap-dot" style="background:#f59e0b"></span>VAULT</div>
+      <div class="hap-glow hap-glow-gold"></div>
+      <div class="vp-stage" id="vaultStage">
+        <!-- Orbit items — JS positions them -->
+        <div class="vp-item" id="vi0">
+          <img src="https://images.unsplash.com/photo-1556906781-9a412961d28d?auto=format&fit=crop&w=200&q=80" alt="Jordan 1">
         </div>
-        <div class="tx-amt">-$220.00</div>
+        <div class="vp-item" id="vi1">
+          <img src="https://images.unsplash.com/photo-1607622678872-db5d1b41d3d5?auto=format&fit=crop&w=200&q=80" alt="Charizard">
+        </div>
+        <div class="vp-item" id="vi2">
+          <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=200&q=80" alt="AirPods Max">
+        </div>
+        <!-- Card reveal (hidden initially) -->
+        <div class="vpc-wrap" id="vpcWrap">
+          <div class="vpc-img" id="vpcImg"></div>
+          <div class="vpc-body">
+            <div class="vpc-name" id="vpcName"></div>
+            <div class="vpc-cat" id="vpcCat"></div>
+            <div class="vpc-market">
+              <span class="vpc-mlabel">MARKET VALUE</span>
+              <span class="vpc-price" id="vpcPrice"></span>
+            </div>
+          </div>
+          <div class="vpc-glow-confirm" id="vpcGlow"></div>
+        </div>
+      </div>
+      <!-- Progress dots -->
+      <div class="vp-dots" id="vaultDots">
+        <span class="vpd vpd-active" data-i="0"></span>
+        <span class="vpd" data-i="1"></span>
+        <span class="vpd" data-i="2"></span>
       </div>
     </div>
 
-    <!-- Arrow -->
-    <div class="hero-arrow">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    <!-- ── CONNECTOR ── -->
+    <div class="ha-conn" id="haConn">
+      <svg viewBox="0 0 2 100" preserveAspectRatio="none" class="conn-svg">
+        <line x1="1" y1="0" x2="1" y2="100" stroke="url(#cg)" stroke-width="1" stroke-dasharray="3 3"/>
+        <defs>
+          <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(245,158,11,0.6)"/>
+            <stop offset="100%" stop-color="rgba(59,130,246,0.6)"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="conn-particle" id="connParticle"></div>
     </div>
 
-    <!-- Vault item card -->
-    <div class="hero-card vault-card">
-      <div class="vault-card-header">
-        <span class="vault-card-title">Vault</span>
-        <div style="text-align:right">
-          <div class="vault-card-val">$24,350</div>
-          <div class="vault-card-change">+12.4%</div>
+    <!-- ── ARCHIVEAUTO PANEL ── -->
+    <div class="ha-panel ha-panel-auto" id="autoPanel">
+      <div class="hap-label"><span class="hap-dot" style="background:#3b82f6"></span>ARCHIVEAUTO</div>
+      <div class="hap-glow hap-glow-blue"></div>
+      <!-- Chase card -->
+      <div class="cc-card" id="chaseCard">
+        <div class="cc-inner">
+          <div class="cc-chip">
+            <div class="cc-chip-h"></div>
+            <div class="cc-chip-v"></div>
+          </div>
+          <div class="cc-brand">CHASE SAPPHIRE</div>
+          <div class="cc-num">•••• •••• •••• 1234</div>
         </div>
+        <div class="cc-ok" id="ccOk">Chase Sapphire Connected ✓</div>
       </div>
-      <div class="vault-item-img">
-        <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=480&q=80" alt="Jordan 4 Retro Military Black">
+      <!-- Transaction tiles list -->
+      <div class="ap-tiles" id="apTiles"></div>
+    </div>
+
+  </div>
+
+  <!-- Mobile fallback (shown < 768px, hides the panels above) -->
+  <div class="ha-mobile-fallback">
+    <div class="hmf-card">
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.4);margin-bottom:10px">VAULT</div>
+      <img src="https://images.unsplash.com/photo-1556906781-9a412961d28d?auto=format&fit=crop&w=300&q=80" style="width:100%;border-radius:10px;margin-bottom:10px" alt="">
+      <div style="font-size:13px;font-weight:600">Travis Scott Jordan 1</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">Sneakers · Market Value</div>
+      <div style="font-size:18px;font-weight:800;color:#f59e0b;margin-top:6px">$850</div>
+    </div>
+    <div class="hmf-card" style="background:linear-gradient(145deg,#0d1118,#111)">
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.4);margin-bottom:10px">ARCHIVEAUTO</div>
+      <div class="cc-card" style="margin-bottom:10px">
+        <div class="cc-inner"><div class="cc-brand" style="font-size:9px">CHASE SAPPHIRE</div><div class="cc-num" style="font-size:9px">•••• 1234</div></div>
       </div>
-      <div class="vault-item-body">
-        <div class="vault-item-name">Jordan 4 Retro Military Black</div>
-        <div class="vault-item-meta">Nike · Sneakers</div>
-        <div class="vault-item-price-label">Market Value</div>
-        <div class="vault-item-price">$220</div>
-        <div class="vault-item-date">Added May 24, 2024</div>
-      </div>
+      <div style="font-size:11px;color:#4ade80;font-weight:600">Chase Sapphire Connected ✓</div>
     </div>
   </div>
 </section>
@@ -1264,12 +1538,258 @@ body::after{
   var obs = new IntersectionObserver(function(entries){
     if(fired || !entries[0].isIntersecting) return;
     fired = true;
-    document.querySelectorAll('.step-arrow').forEach(function(el){
-      el.classList.add('visible');
-    });
+    document.querySelectorAll('.step-arrow').forEach(function(el){ el.classList.add('visible'); });
     obs.disconnect();
   }, {threshold: 0.3});
   obs.observe(section);
+})();
+
+/* ══════════════════════════════════════
+   DUAL HERO ANIMATION ENGINE
+   ══════════════════════════════════════ */
+(function(){
+  if(window.innerWidth < 900) return; // mobile: skip
+
+  /* ── Data ── */
+  var ITEMS = [
+    { img:'https://images.unsplash.com/photo-1556906781-9a412961d28d?auto=format&fit=crop&w=200&q=80',
+      name:'Travis Scott Jordan 1', cat:'Sneakers', price:'$850' },
+    { img:'https://images.unsplash.com/photo-1607622678872-db5d1b41d3d5?auto=format&fit=crop&w=200&q=80',
+      name:'Charizard Holo 1st Ed', cat:'Trading Card', price:'$320' },
+    { img:'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=200&q=80',
+      name:'AirPods Max Silver', cat:'Tech', price:'$449' }
+  ];
+  var TX = [
+    { badge:'SX', color:'#00b020', text:'#fff', name:'StockX', detail:'Jordan 4 Retro', cat:'Sneakers', amt:'-$220.00', vaulted:true },
+    { badge:'a',  color:'#ff9900', text:'#000', name:'Amazon',  detail:'Amazon Purchase',  cat:'Shopping',  amt:'-$89.99',  vaulted:false },
+    { badge:'Ub', color:'#276ef1', text:'#fff', name:'Uber',    detail:'Uber Ride',         cat:'Transport',  amt:'-$18.35',  vaulted:false },
+    { badge:'NK', color:'#111',    text:'#fff', name:'Nike',    detail:'Nike Dunk Low',     cat:'Sneakers',  amt:'-$129.99', vaulted:false },
+    { badge:'TB', color:'#702082', text:'#fff', name:'Taco Bell',detail:'Taco Bell',        cat:'Food',      amt:'-$12.45',  vaulted:false }
+  ];
+
+  /* ── DOM refs ── */
+  var vaultPanel = document.getElementById('vaultPanel');
+  var vaultStage = document.getElementById('vaultStage');
+  var vpcWrap    = document.getElementById('vpcWrap');
+  var vpcImg     = document.getElementById('vpcImg');
+  var vpcName    = document.getElementById('vpcName');
+  var vpcCat     = document.getElementById('vpcCat');
+  var vpcPrice   = document.getElementById('vpcPrice');
+  var vpcGlow    = document.getElementById('vpcGlow');
+  var vaultDots  = document.getElementById('vaultDots');
+  var chaseCard  = document.getElementById('chaseCard');
+  var ccOk       = document.getElementById('ccOk');
+  var apTiles    = document.getElementById('apTiles');
+  var connParticle = document.getElementById('connParticle');
+
+  var ois = [
+    document.getElementById('vi0'),
+    document.getElementById('vi1'),
+    document.getElementById('vi2')
+  ];
+
+  /* ── Orbit state ── */
+  var orbiting = true;
+  var activeIdx = 0;
+  var orbitAngle = 0;           // radians, advances each frame
+  var ORBIT_SPEED = 0.25;       // rad/sec
+  var ORBIT_R = 68;             // px from stage center
+  var ORBIT_RY = 30;            // y compression for ellipse
+  var stageW = 0, stageH = 0;
+  var raf = null;
+  var lastT = null;
+  var phaseOffsets = [0, 2.094, 4.189]; // 0°, 120°, 240°
+
+  function getStageCenter(){
+    var r = vaultStage.getBoundingClientRect();
+    return { cx: r.width/2, cy: r.height/2 };
+  }
+
+  function applyOrbitPos(){
+    var c = getStageCenter();
+    ois.forEach(function(el, i){
+      if(!orbiting) return;
+      var angle = orbitAngle + phaseOffsets[i];
+      var x = c.cx + ORBIT_R * Math.cos(angle) - 44;
+      var y = c.cy + ORBIT_RY * Math.sin(angle) - 44;
+      var floatY = Math.sin(orbitAngle * 2 + phaseOffsets[i]) * 4;
+      el.style.left = x + 'px';
+      el.style.top  = (y + floatY) + 'px';
+      // depth layering
+      var depth = Math.sin(angle); // -1 (back) to 1 (front)
+      var sc = 0.82 + 0.18 * ((depth + 1) / 2);
+      var op = 0.55 + 0.45 * ((depth + 1) / 2);
+      var bl = depth < 0 ? ((-depth) * 3).toFixed(1) + 'px' : '0px';
+      el.style.transform = 'scale(' + sc.toFixed(3) + ')';
+      el.style.opacity = op.toFixed(3);
+      el.style.filter = 'blur(' + bl + ')';
+      el.style.zIndex = Math.round(depth * 10 + 10);
+    });
+  }
+
+  function frame(ts){
+    if(lastT === null) lastT = ts;
+    var dt = (ts - lastT) / 1000;
+    lastT = ts;
+    if(orbiting) orbitAngle += ORBIT_SPEED * dt;
+    applyOrbitPos();
+    raf = requestAnimationFrame(frame);
+  }
+
+  function setDot(i){
+    document.querySelectorAll('.vpd').forEach(function(d,di){
+      d.classList.toggle('vpd-active', di === i);
+    });
+  }
+
+  /* ── Vault cycle ── */
+  function runVaultCycle(idx){
+    activeIdx = idx;
+    setDot(idx);
+    orbiting = true;
+
+    // Phase 1: Orbit 0-2s
+    setTimeout(function(){
+      // Phase 2: Selection 2-3s
+      orbiting = false;
+      var c = getStageCenter();
+      ois.forEach(function(el, i){
+        el.classList.remove('vpi-active','vpi-dim');
+        if(i === idx){
+          el.classList.add('vpi-active');
+          el.style.left = (c.cx - 44) + 'px';
+          el.style.top  = (c.cy - 44) + 'px';
+          el.style.transform = 'scale(1.15)';
+          el.style.opacity   = '1';
+          el.style.filter    = 'blur(0px)';
+          el.style.zIndex    = '20';
+        } else {
+          el.classList.add('vpi-dim');
+          el.style.transform = 'scale(0.82)';
+          el.style.opacity   = '0.22';
+        }
+      });
+    }, 2000);
+
+    setTimeout(function(){
+      // Phase 3: Card reveal 3-4.5s
+      var item = ITEMS[idx];
+      vpcImg.innerHTML = '<img src="' + item.img + '" style="width:100%;height:100%;object-fit:cover">';
+      vpcName.textContent = item.name;
+      vpcCat.textContent  = item.cat;
+      vpcPrice.textContent = item.price;
+      vpcPrice.classList.remove('green');
+      vpcGlow.classList.remove('on');
+      vpcWrap.classList.remove('data-in','confirm','pulsing');
+      // hide orbit items
+      ois.forEach(function(el){ el.style.opacity='0'; });
+      vpcWrap.classList.add('visible');
+      setTimeout(function(){ vpcWrap.classList.add('data-in'); }, 120);
+    }, 3000);
+
+    setTimeout(function(){
+      // Phase 4: Confirmation 4.5-6s
+      vpcPrice.classList.add('green');
+      vpcWrap.classList.add('confirm','pulsing');
+      vpcGlow.classList.add('on');
+      setTimeout(function(){ vpcWrap.classList.remove('pulsing'); }, 700);
+    }, 4500);
+
+    setTimeout(function(){
+      // Phase 5: Reset 6-8s
+      // trigger connector particle
+      fireConnector();
+      vpcWrap.classList.remove('visible','data-in','confirm');
+      vpcGlow.classList.remove('on');
+      vpcPrice.classList.remove('green');
+      ois.forEach(function(el){
+        el.classList.remove('vpi-active','vpi-dim');
+        el.style.opacity='';
+        el.style.filter='';
+      });
+      orbiting = true;
+      orbitAngle += Math.PI; // shift so next active item comes to top
+      var next = (idx + 1) % ITEMS.length;
+      setTimeout(function(){ runVaultCycle(next); }, 2000);
+    }, 6000);
+  }
+
+  /* ── Connector particle ── */
+  function fireConnector(){
+    var p = connParticle;
+    p.style.top = '20%';
+    p.classList.add('active');
+    setTimeout(function(){
+      p.style.top = '80%';
+    }, 50);
+    setTimeout(function(){
+      p.classList.remove('active');
+      p.style.top = '50%';
+    }, 700);
+  }
+
+  /* ── ArchiveAuto cycle ── */
+  function buildTiles(){
+    apTiles.innerHTML = '';
+    TX.forEach(function(tx){
+      var div = document.createElement('div');
+      div.className = 'apt';
+      div.innerHTML =
+        '<div class="apt-badge" style="background:' + tx.color + ';color:' + tx.text + '">' + tx.badge + '</div>' +
+        '<div class="apt-info"><div class="apt-name">' + tx.name + '</div><div class="apt-cat">' + tx.cat + '</div></div>' +
+        '<div class="apt-amt">' + tx.amt + '</div>' +
+        (tx.vaulted ? '<div class="apt-vault-badge">→ Vault</div>' : '');
+      apTiles.appendChild(div);
+    });
+  }
+
+  function runAutoCycle(){
+    // Phase 1: Card linked 0-1s
+    chaseCard.classList.remove('glow');
+    ccOk.classList.remove('show');
+    var tiles = apTiles.querySelectorAll('.apt');
+    tiles.forEach(function(t){ t.classList.remove('in','processing','vaulted'); });
+
+    setTimeout(function(){
+      chaseCard.classList.add('glow');
+      ccOk.classList.add('show');
+    }, 500);
+
+    // Phase 2: Transactions stream in 1-2.5s
+    tiles.forEach(function(t, i){
+      setTimeout(function(){
+        t.classList.add('in');
+      }, 1000 + i * 280);
+    });
+
+    // Phase 3: AI processing 2.5-4s
+    setTimeout(function(){
+      tiles.forEach(function(t, i){
+        setTimeout(function(){ t.classList.add('processing'); }, i * 180);
+      });
+    }, 2700);
+
+    // Phase 4: Vault handoff 4-5s (first tile)
+    setTimeout(function(){
+      tiles[0].classList.add('vaulted');
+    }, 4200);
+
+    // Reset 5.5s
+    setTimeout(function(){
+      chaseCard.classList.remove('glow');
+      ccOk.classList.remove('show');
+      tiles.forEach(function(t){
+        t.classList.remove('in','processing','vaulted');
+      });
+      setTimeout(runAutoCycle, 1000);
+    }, 5500);
+  }
+
+  /* ── Boot ── */
+  buildTiles();
+  raf = requestAnimationFrame(frame);
+  runVaultCycle(0);
+  setTimeout(runAutoCycle, 800); // auto starts 0.8s after vault
 })();
 </script>
 
