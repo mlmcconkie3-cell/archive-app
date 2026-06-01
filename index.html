@@ -55,17 +55,16 @@ img{display:block;max-width:100%}
   font-weight:600;
   letter-spacing:0.14em;
   text-transform:uppercase;
-  color:rgba(255,255,255,0.4);
-  margin-bottom:48px;
+  color:rgba(255,255,255,0.55);
+  margin-bottom:36px;
 }
 .container{max-width:1100px;margin:0 auto}
 
 /* ── Hero ── */
 .hero{
-  min-height:calc(100vh - 60px);
   display:flex;
   align-items:center;
-  padding:80px 48px;
+  padding:48px 48px 60px;
   gap:60px;
   max-width:1200px;
   margin:0 auto;
@@ -204,7 +203,7 @@ img{display:block;max-width:100%}
 
 /* ── Two Sides section ── */
 .two-sides{
-  padding:80px 48px;
+  padding:56px 48px;
   max-width:1100px;
   margin:0 auto;
 }
@@ -295,7 +294,7 @@ img{display:block;max-width:100%}
 .tx-list-total-change{font-size:10px;color:#f87171;font-weight:600}
 
 /* ── How It Works ── */
-.how-section{padding:80px 48px;max-width:1000px;margin:0 auto}
+.how-section{padding:56px 48px;max-width:1000px;margin:0 auto}
 .steps{display:flex;align-items:flex-start;gap:0}
 .step{flex:1;text-align:center;position:relative}
 .step-arrow{
@@ -325,7 +324,7 @@ img{display:block;max-width:100%}
 .step-text{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.55;padding:0 12px}
 
 /* ── Use Cases ── */
-.use-section{padding:60px 48px 80px;max-width:1100px;margin:0 auto}
+.use-section{padding:48px 48px 56px;max-width:1100px;margin:0 auto}
 .use-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .use-card{
   background:#111;
@@ -364,10 +363,18 @@ img{display:block;max-width:100%}
 
 /* ── Stats Banner ── */
 .stats-banner{
-  background:#111;
-  border-top:1px solid rgba(255,255,255,0.07);
-  border-bottom:1px solid rgba(255,255,255,0.07);
-  padding:40px 48px;
+  background:#141414;
+  border-top:1px solid rgba(255,255,255,0.12);
+  border-bottom:1px solid rgba(255,255,255,0.12);
+  padding:44px 48px;
+  position:relative;
+}
+.stats-banner::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.02) 0%,transparent 60%);
+  pointer-events:none;
 }
 .stats-inner{
   max-width:1100px;margin:0 auto;
@@ -395,7 +402,7 @@ img{display:block;max-width:100%}
 
 /* ── Final CTA ── */
 .cta-section{
-  padding:100px 48px;
+  padding:72px 48px;
   text-align:center;
 }
 .cta-h2{
@@ -551,7 +558,7 @@ footer{
 
 <!-- Two Sides -->
 <section id="vault" class="two-sides">
-  <p class="section-label">Two sides. One complete picture.</p>
+  <p class="section-label" style="margin-bottom:28px">TWO SIDES. ONE COMPLETE PICTURE.</p>
   <div class="two-cards">
 
     <!-- Vault card -->
@@ -591,7 +598,7 @@ footer{
       <div class="vault-grid">
         <div class="vault-thumb"><img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=120&q=80" alt="Sneaker"></div>
         <div class="vault-thumb"><img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=120&q=80" alt="Watch"></div>
-        <div class="vault-thumb"><img src="https://images.unsplash.com/photo-1584503484886-437a8f1f07ab?auto=format&fit=crop&w=120&q=80" alt="Cards"></div>
+        <div class="vault-thumb"><img src="https://images.unsplash.com/photo-1607622678872-db5d1b41d3d5?auto=format&fit=crop&w=120&q=80" alt="Cards"></div>
         <div class="vault-thumb"><img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=120&q=80" alt="Bag"></div>
       </div>
       <div class="vault-total">
@@ -695,7 +702,7 @@ footer{
 
 <!-- How It Works -->
 <section class="how-section" id="how">
-  <p class="section-label">One purchase. Fully tracked.</p>
+  <p class="section-label" style="margin-bottom:40px">ONE PURCHASE. FULLY TRACKED.</p>
   <div class="steps">
 
     <div class="step">
@@ -752,11 +759,11 @@ footer{
 
 <!-- Use Cases -->
 <section class="use-section">
-  <p class="section-label">Built for every type of buyer</p>
+  <p class="section-label" style="margin-bottom:24px">BUILT FOR EVERY TYPE OF BUYER</p>
   <div class="use-grid">
     <div class="use-card">
       <div class="use-img">
-        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&h=360&q=80" alt="Sneaker Collector">
+        <img src="https://images.unsplash.com/photo-1556906781-9a412961d28d?auto=format&fit=crop&w=600&h=360&q=80" alt="Sneaker Collector">
       </div>
       <div class="use-body">
         <div class="use-title">The Sneaker Collector</div>
