@@ -5,6 +5,9 @@
     },
     "api/price-check.js": {
       "maxDuration": 30
+    },
+    "api/archive-look.js": {
+      "maxDuration": 60
     }
   }
 }

@@ -49,3 +49,11 @@ create table if not exists api_error_log (
 
 alter table api_error_log enable row level security;
 create policy "anon insert" on api_error_log for insert to anon with check (true);
+
+-- ─── Archive Look image pipeline (existing items columns) ───────────────────
+-- Prefer these columns only. ADD COLUMN IF NOT EXISTS so older items tables
+-- pick up the display contract without a new migration.
+alter table if exists items add column if not exists image_original text;
+alter table if exists items add column if not exists image_display text;
+alter table if exists items add column if not exists image_thumbnail text;
+alter table if exists items add column if not exists image_status text;
